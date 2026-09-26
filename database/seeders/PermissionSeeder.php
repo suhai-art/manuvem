@@ -13,7 +13,6 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Permissões de usuários
         $permissions = [
             'users.view',
             'users.create',
@@ -22,13 +21,24 @@ class PermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
+            Permission::firstOrCreate([
+                'name' => $permission,
+                'guard_name' => 'web',
+            ]);
         }
 
         // Role admin com todas as permissões
-        $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $adminRole = Role::firstOrCreate([
+            'name' => 'admin',
+            'guard_name' => 'web',
+        ]);
 
-        $adminPermissions = Permission::whereIn('name', $permissions)->get();
-        $adminRole->syncPermissions($adminPermissions);
+        $adminRole->syncPermissions($permissions);
+
+        // Role usuário sem permissões administrativas
+        Role::firstOrCreate([
+            'name' => 'user',
+            'guard_name' => 'web',
+        ]);
     }
 }

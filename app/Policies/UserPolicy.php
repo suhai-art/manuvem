@@ -51,7 +51,7 @@ class UserPolicy
             return false;
         }
 
-        return $user->hasRole('admin');
+        return $user->can('users.delete');
     }
 
     /**

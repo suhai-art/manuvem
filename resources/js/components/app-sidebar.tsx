@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
+import useRole from '@/hooks/use-role';
 
 const mainNavItems: NavItem[] = [
     {
@@ -22,18 +23,25 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
+
+];
+
+const adminItems: NavItem[] = [
     {
         title: 'Usuários',
         href: '/admin/users',
         icon: Users,
+        isActive: false
     },
-];
+]
 
 const footerNavItems: NavItem[] = [
 
 ];
 
 export function AppSidebar() {
+    const { isAdmin } = useRole();
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -53,7 +61,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+                <NavFooter items={[...footerNavItems, ...(isAdmin ? adminItems : [])]} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
