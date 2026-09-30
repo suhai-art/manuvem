@@ -62,5 +62,9 @@ export function useAppearance(): UseAppearanceReturn {
         notify();
     };
 
-    return { appearance, resolvedAppearance: 'light', updateAppearance } as const;
+    return {
+        appearance,
+        resolvedAppearance: 'light',
+        updateAppearance,
+    } as const;
 }

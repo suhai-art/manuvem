@@ -1,5 +1,11 @@
 import { Link } from '@inertiajs/react';
-import { ChevronRight, LayoutGrid, Settings, Users } from 'lucide-react';
+import {
+    ChevronRight,
+    LayoutGrid,
+    Settings,
+    Shield,
+    Users,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -21,7 +27,8 @@ import {
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import { index } from '@/routes/admin/users'
+import { index } from '@/routes/admin/users';
+import { index as rolesIndex } from '@/routes/admin/roles';
 import type { NavItem } from '@/types';
 import useRole from '@/hooks/use-role';
 import { useCurrentUrl } from '@/hooks/use-current-url';
@@ -38,10 +45,16 @@ const footerNavItems: NavItem[] = [];
 
 const adminItems: NavItem[] = [
     {
+        title: 'Roles',
+        href: rolesIndex(),
+        icon: Shield,
+        permissions: ['roles.view'],
+    },
+    {
         title: 'Usuários',
         href: index(),
         icon: Users,
-        permissions: ['users.view']
+        permissions: ['users.view'],
     },
 ];
 
@@ -49,7 +62,6 @@ export function AppSidebar() {
     const { isAdmin, hasPermission } = useRole();
     const { isCurrentUrl } = useCurrentUrl();
     const isAdminRoute = adminItems.some((item) => isCurrentUrl(item.href));
-
 
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -66,16 +78,34 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems.filter((item) => !item.permissions?.length || item.permissions?.some((permission) => hasPermission(permission)))} />
+                <NavMain
+                    items={mainNavItems.filter(
+                        (item) =>
+                            !item.permissions?.length ||
+                            item.permissions?.some((permission) =>
+                                hasPermission(permission),
+                            ),
+                    )}
+                />
             </SidebarContent>
 
             <SidebarFooter>
                 <SidebarMenu>
                     {footerNavItems
-                        .filter((item) => !item.permissions?.length || item.permissions?.some((permission) => hasPermission(permission)))
+                        .filter(
+                            (item) =>
+                                !item.permissions?.length ||
+                                item.permissions?.some((permission) =>
+                                    hasPermission(permission),
+                                ),
+                        )
                         .map((item) => (
                             <SidebarMenuItem key={item.title}>
-                                <SidebarMenuButton asChild tooltip={item.title} isActive={isCurrentUrl(item.href)}>
+                                <SidebarMenuButton
+                                    asChild
+                                    tooltip={item.title}
+                                    isActive={isCurrentUrl(item.href)}
+                                >
                                     <Link href={item.href}>
                                         {item.icon && <item.icon />}
                                         <span>{item.title}</span>
@@ -96,20 +126,40 @@ export function AppSidebar() {
                                         <Settings />
                                         <span>Configurações</span>
 
-                                        <ChevronRight className="ml-auto transition-transform rotate-90 duration-200 group-data-[state=closed]/collapsible:rotate-0" />
+                                        <ChevronRight className="ml-auto rotate-90 transition-transform duration-200 group-data-[state=closed]/collapsible:rotate-0" />
                                     </SidebarMenuButton>
                                 </CollapsibleTrigger>
 
                                 <CollapsibleContent>
                                     <SidebarMenuSub>
                                         {adminItems
-                                            .filter((item) => !item.permissions?.length || item.permissions?.some((permission) => hasPermission(permission)))
+                                            .filter(
+                                                (item) =>
+                                                    !item.permissions?.length ||
+                                                    item.permissions?.some(
+                                                        (permission) =>
+                                                            hasPermission(
+                                                                permission,
+                                                            ),
+                                                    ),
+                                            )
                                             .map((item) => (
-                                                <SidebarMenuSubItem key={item.title}>
-                                                    <SidebarMenuSubButton asChild isActive={isCurrentUrl(item.href)}>
+                                                <SidebarMenuSubItem
+                                                    key={item.title}
+                                                >
+                                                    <SidebarMenuSubButton
+                                                        asChild
+                                                        isActive={isCurrentUrl(
+                                                            item.href,
+                                                        )}
+                                                    >
                                                         <Link href={item.href}>
-                                                            {item.icon && <item.icon />}
-                                                            <span>{item.title}</span>
+                                                            {item.icon && (
+                                                                <item.icon />
+                                                            )}
+                                                            <span>
+                                                                {item.title}
+                                                            </span>
                                                         </Link>
                                                     </SidebarMenuSubButton>
                                                 </SidebarMenuSubItem>

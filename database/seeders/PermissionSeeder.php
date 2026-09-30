@@ -13,14 +13,21 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $permissions = [
+        $permissions = [];
+
+        $adminPermissions = array_merge([
             'users.view',
             'users.create',
             'users.update',
             'users.delete',
-        ];
 
-        foreach ($permissions as $permission) {
+            'roles.view',
+            'roles.create',
+            'roles.update',
+            'roles.delete',
+        ], $permissions);
+
+        foreach ($adminPermissions as $permission) {
             Permission::firstOrCreate([
                 'name' => $permission,
                 'guard_name' => 'web',
@@ -33,12 +40,15 @@ class PermissionSeeder extends Seeder
             'guard_name' => 'web',
         ]);
 
-        $adminRole->syncPermissions($permissions);
+        $adminRole->syncPermissions($adminPermissions);
 
         // Role usuário sem permissões administrativas
-        Role::firstOrCreate([
+        $userRole = Role::firstOrCreate([
             'name' => 'user',
             'guard_name' => 'web',
         ]);
+
+        $userRole->syncPermissions($permissions);
+
     }
 }
