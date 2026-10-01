@@ -10,7 +10,7 @@ type Role = {
     id: number;
     name: string;
     permissions?: Permission[];
-    permissions_count:number;
+    permissions_count: number;
 };
 
 type RolesPayload = {

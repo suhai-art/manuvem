@@ -6,7 +6,7 @@ type Permission = { id: number; name: string; guard_name: string };
 
 export default function RoleCreate() {
     const { permissions: permissionsProp } = usePage().props;
-    console.log(usePage().props)
+    console.log(usePage().props);
     const permissions: Permission[] = permissionsProp
         ? (permissionsProp as Permission[])
         : [];

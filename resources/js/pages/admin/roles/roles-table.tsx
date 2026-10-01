@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Shield, Search, ShieldCheck, Trash2, Edit } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import useRole from '@/hooks/use-role';
-import { create, edit } from '@/routes/admin/roles'
+import { create, edit } from '@/routes/admin/roles';
 
 type Permission = { id: number; name: string; guard_name: string };
 type Role = {
@@ -36,7 +36,7 @@ export function RolesTable({
     onDelete?: (role: Role) => void;
 }) {
     const [search, setSearch] = useState('');
-    const { hasPermission } = useRole()
+    const { hasPermission } = useRole();
 
     const filtered = useMemo(() => {
         const q = search.trim().toLowerCase();
@@ -65,17 +65,15 @@ export function RolesTable({
                     </p>
                 </div>
                 <div className="flex w-full items-center gap-2 sm:w-auto">
-                    {hasPermission('roles.create') &&
-                        (
-                            <Link
-                                type="button"
-                                className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
-                                href={create()}
-                            >
-                                Novo cargo
-                            </Link>
-                        )
-                    }
+                    {hasPermission('roles.create') && (
+                        <Link
+                            type="button"
+                            className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+                            href={create()}
+                        >
+                            Novo cargo
+                        </Link>
+                    )}
 
                     <label className="relative flex min-w-0 flex-1 items-center sm:w-64">
                         <Search
@@ -106,7 +104,10 @@ export function RolesTable({
                             <th scope="col" className="px-5 py-3 font-medium">
                                 Permissões
                             </th>
-                            <th scope="col" className="px-5 py-3 font-medium flex justify-end gap-1.5">
+                            <th
+                                scope="col"
+                                className="flex justify-end gap-1.5 px-5 py-3 font-medium"
+                            >
                                 Ações
                             </th>
                         </tr>
@@ -136,13 +137,12 @@ export function RolesTable({
                                             className="size-3.5"
                                             aria-hidden="true"
                                         />
-                                        {role.permissions_count +
-                                            ' permissões'}
+                                        {role.permissions_count + ' permissões'}
                                     </span>
                                 </td>
                                 <td className="px-5 py-4">
                                     <div className="flex justify-end gap-1.5">
-                                        {hasPermission('roles.update') &&
+                                        {hasPermission('roles.update') && (
                                             <Link
                                                 type="button"
                                                 href={edit.url(role.id)}
@@ -154,8 +154,8 @@ export function RolesTable({
                                                 />
                                                 Editar
                                             </Link>
-                                        }
-                                        {hasPermission('roles.delete') &&
+                                        )}
+                                        {hasPermission('roles.delete') && (
                                             <button
                                                 type="button"
                                                 onClick={() => onDelete?.(role)}
@@ -167,7 +167,7 @@ export function RolesTable({
                                                 />
                                                 Excluir
                                             </button>
-                                        }
+                                        )}
                                     </div>
                                 </td>
                             </tr>

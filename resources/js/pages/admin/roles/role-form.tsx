@@ -6,6 +6,23 @@ import { Link } from '@inertiajs/react';
 
 type Permission = { id: number; name: string; guard_name: string };
 
+function getModulo(name: string): string {
+    const dot = name.indexOf('.');
+    if (dot === -1) return name;
+    return name.slice(0, dot);
+}
+
+function getPermissao(name: string): string {
+    const dot = name.indexOf('.');
+    if (dot === -1) return name;
+    return name.slice(dot + 1);
+}
+
+type ModuleGroup = {
+    modulo: string;
+    permissions: Permission[];
+};
+
 type RoleFormProps = {
     mode: 'create' | 'edit';
     permissions: Permission[];
@@ -36,6 +53,20 @@ export function RoleForm({
         event.preventDefault();
         onSubmit?.({ name, permissions: selected });
     }
+
+    const groups: ModuleGroup[] = permissions.reduce<ModuleGroup[]>(
+        (acc, perm) => {
+            const modulo = getModulo(perm.name);
+            const existing = acc.find((g) => g.modulo === modulo);
+            if (existing) {
+                existing.permissions.push(perm);
+            } else {
+                acc.push({ modulo, permissions: [perm] });
+            }
+            return acc;
+        },
+        [],
+    );
 
     return (
         <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
@@ -86,35 +117,42 @@ export function RoleForm({
                     <p className="mb-3 text-sm font-medium text-foreground">
                         Permissões
                     </p>
-                    <div className="flex flex-col gap-2">
-                        {permissions.length === 0 ? (
-                            <p className="rounded-lg border border-dashed border-border/70 px-4 py-6 text-sm text-muted-foreground">
-                                Nenhuma permissão disponível.
-                            </p>
-                        ) : (
-                            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                                {permissions.map((permission) => (
-                                    <label
-                                        key={permission.id}
-                                        className="flex cursor-pointer items-center gap-3 rounded-lg border border-input/50 bg-background px-3 py-2 text-sm transition focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20 hover:border-ring"
-                                    >
-                                        <Checkbox
-                                            checked={selected.includes(
-                                                permission.id,
-                                            )}
-                                            onCheckedChange={() =>
-                                                toggle(permission.id)
-                                            }
-                                            id={`perm-${permission.id}`}
-                                        />
-                                        <span className="text-muted-foreground select-none">
-                                            {permission.name}
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    {permissions.length === 0 ? (
+                        <p className="rounded-lg border border-dashed border-border/70 px-4 py-6 text-sm text-muted-foreground">
+                            Nenhuma permissão disponível.
+                        </p>
+                    ) : (
+                        <div className="flex flex-col gap-5">
+                            {groups.map((group) => (
+                                <div key={group.modulo}>
+                                    <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                                        {group.modulo}
+                                    </p>
+                                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                                        {group.permissions.map((perm) => (
+                                            <label
+                                                key={perm.id}
+                                                className="flex cursor-pointer items-center gap-3 rounded-lg border border-input/50 bg-background px-3 py-2 text-sm transition focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20 hover:border-ring"
+                                            >
+                                                <Checkbox
+                                                    checked={selected.includes(
+                                                        perm.id,
+                                                    )}
+                                                    onCheckedChange={() =>
+                                                        toggle(perm.id)
+                                                    }
+                                                    id={`perm-${perm.id}`}
+                                                />
+                                                <span className="text-muted-foreground select-none">
+                                                    {getPermissao(perm.name)}
+                                                </span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex justify-end gap-3 border-t border-border/70 pt-6">
@@ -130,7 +168,9 @@ export function RoleForm({
                         className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
                     >
                         <Save className="size-4" aria-hidden="true" />
-                        {mode === 'create' ? 'Criar Cargo' : 'Salvar alterações'}
+                        {mode === 'create'
+                            ? 'Criar Cargo'
+                            : 'Salvar alterações'}
                     </button>
                 </div>
             </form>

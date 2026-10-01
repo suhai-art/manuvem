@@ -35,8 +35,7 @@ export default function useRole() {
         permissions,
         roles,
 
-        hasRole: (role: string) =>
-            roles.some((item) => item.name === role),
+        hasRole: (role: string) => roles.some((item) => item.name === role),
 
         hasPermission: (permission: string) =>
             permissions.some((item) => item.name === permission),

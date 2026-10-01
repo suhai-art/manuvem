@@ -67,7 +67,8 @@ export default function RoleShow() {
                                 </h2>
                                 {role.permissions.length === 0 ? (
                                     <p className="rounded-lg border border-dashed border-border/70 px-4 py-6 text-sm text-muted-foreground">
-                                        Este cargo não tem permissões atribuídas.
+                                        Este cargo não tem permissões
+                                        atribuídas.
                                     </p>
                                 ) : (
                                     <div className="flex flex-col gap-2">
