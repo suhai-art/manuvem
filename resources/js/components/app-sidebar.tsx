@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import {
     ChevronRight,
     LayoutGrid,
+    PencilRuler,
     Settings,
     Shield,
     Users,
@@ -29,6 +30,7 @@ import {
 import { dashboard } from '@/routes';
 import { index } from '@/routes/admin/users';
 import { index as rolesIndex } from '@/routes/admin/roles';
+import { index as itemsIndex } from '@/routes/items';
 import type { NavItem } from '@/types';
 import useRole from '@/hooks/use-role';
 import { useCurrentUrl } from '@/hooks/use-current-url';
@@ -39,6 +41,12 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
+    {
+        title: 'Items',
+        href: itemsIndex(),
+        icon: PencilRuler,
+        permissions: ['items.view'],
+    }
 ];
 
 const footerNavItems: NavItem[] = [];

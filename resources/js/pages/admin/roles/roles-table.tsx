@@ -84,7 +84,7 @@ export function RolesTable({
                         <input
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Buscar role..."
+                            placeholder="Buscar cargo..."
                             className="h-9 w-full rounded-lg border border-input bg-background pr-3 pl-9 text-sm transition outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
                         />
                     </label>
