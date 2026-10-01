@@ -1,6 +1,8 @@
 import { FormEvent, useState } from 'react';
 import { ArrowLeft, Save, Shield } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { index } from '@/routes/admin/roles';
+import { Link } from '@inertiajs/react';
 
 type Permission = { id: number; name: string; guard_name: string };
 
@@ -116,13 +118,13 @@ export function RoleForm({
                 </div>
 
                 <div className="flex justify-end gap-3 border-t border-border/70 pt-6">
-                    <button
+                    <Link
                         type="button"
-                        onClick={onCancel}
+                        href={index()}
                         className="rounded-lg border border-input px-4 py-2 text-sm font-medium transition hover:bg-muted"
                     >
                         Cancelar
-                    </button>
+                    </Link>
                     <button
                         type="submit"
                         className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"

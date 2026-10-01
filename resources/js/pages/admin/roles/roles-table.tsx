@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Shield, Search, ShieldCheck, Trash2, Edit } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import useRole from '@/hooks/use-role';
+import { create, edit } from '@/routes/admin/roles'
 
 type Permission = { id: number; name: string; guard_name: string };
 type Role = {
@@ -26,7 +27,6 @@ const formatCount = (count: number) =>
 
 export function RolesTable({
     roles,
-    onCreate,
     onEdit,
     onDelete,
 }: {
@@ -43,6 +43,8 @@ export function RolesTable({
         if (!q) return roles.data;
         return roles.data.filter((r) => r.name.toLowerCase().includes(q));
     }, [search, roles.data]);
+
+    console.log(filtered[0].id)
 
     return (
         <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
@@ -67,13 +69,13 @@ export function RolesTable({
                 <div className="flex w-full items-center gap-2 sm:w-auto">
                     {hasPermission('roles.create') &&
                         (
-                            <button
+                            <Link
                                 type="button"
-                                onClick={onCreate}
                                 className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+                                href={create()}
                             >
                                 Novo cargo
-                            </button>
+                            </Link>
                         )
                     }
 
@@ -142,9 +144,9 @@ export function RolesTable({
                                 </td>
                                 <td className="px-5 py-4">
                                     <div className="flex justify-end gap-1.5">
-                                        <button
+                                        <Link
                                             type="button"
-                                            onClick={() => onEdit?.(role)}
+                                            href={edit.url(role.id)}
                                             className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                                         >
                                             <Edit
@@ -152,7 +154,7 @@ export function RolesTable({
                                                 aria-hidden="true"
                                             />
                                             Editar
-                                        </button>
+                                        </Link>
                                         <button
                                             type="button"
                                             onClick={() => onDelete?.(role)}

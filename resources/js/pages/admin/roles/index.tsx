@@ -36,10 +36,12 @@ export default function RolesIndex() {
         if (screen === 'create') {
             router.post(store.url(), values, {
                 preserveScroll: true,
+                preserveState: false,
             });
         } else if (selected) {
             router.put(update.url(selected.id), values, {
                 preserveScroll: true,
+                preserveState: false,
             });
         }
         setScreen('index');
