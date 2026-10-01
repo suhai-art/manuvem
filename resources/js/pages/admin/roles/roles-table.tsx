@@ -146,26 +146,28 @@ export function RolesTable({
                                             <Link
                                                 type="button"
                                                 href={edit.url(role.id)}
-                                                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                                                aria-label={`Editar ${role.name}`}
+                                                title="Editar"
+                                                className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                                             >
-                                                <Edit
-                                                    className="size-3.5"
-                                                    aria-hidden="true"
-                                                />
-                                                Editar
+                                                <Edit aria-hidden="true" />
+                                                <span className="hidden sm:inline">
+                                                    Editar
+                                                </span>
                                             </Link>
                                         )}
                                         {hasPermission('roles.delete') && (
                                             <button
                                                 type="button"
                                                 onClick={() => onDelete?.(role)}
-                                                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-destructive hover:bg-destructive/10"
+                                                aria-label={`Excluir ${role.name}`}
+                                                title="Excluir"
+                                                className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-destructive hover:bg-destructive/10"
                                             >
-                                                <Trash2
-                                                    className="size-3.5"
-                                                    aria-hidden="true"
-                                                />
-                                                Excluir
+                                                <Trash2 aria-hidden="true" />
+                                                <span className="hidden sm:inline">
+                                                    Excluir
+                                                </span>
                                             </button>
                                         )}
                                     </div>

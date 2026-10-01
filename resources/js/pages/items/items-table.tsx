@@ -49,11 +49,10 @@ export function ItemsTable({
     const filtered = useMemo(() => {
         const query = search.trim().toLowerCase();
         const result = query
-            ? items.data.filter(
-                  (item) =>
-                      `${item.name} ${item.description}`
-                          .toLowerCase()
-                          .includes(query),
+            ? items.data.filter((item) =>
+                  `${item.name} ${item.description}`
+                      .toLowerCase()
+                      .includes(query),
               )
             : items.data;
 
@@ -143,9 +142,7 @@ export function ItemsTable({
                             <th scope="col" className="px-5 py-3 font-medium">
                                 <button
                                     type="button"
-                                    onClick={() =>
-                                        setSortAscending((v) => !v)
-                                    }
+                                    onClick={() => setSortAscending((v) => !v)}
                                     className="inline-flex items-center gap-1 font-medium hover:text-foreground"
                                 >
                                     CADASTRO
@@ -193,25 +190,29 @@ export function ItemsTable({
                                         {hasPermission('items.update') && (
                                             <button
                                                 type="button"
-                                                onClick={() =>
-                                                    onEdit?.(item)
-                                                }
-                                                className="rounded-md px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                                                onClick={() => onEdit?.(item)}
+                                                aria-label={`Editar ${item.name}`}
+                                                title="Editar"
+                                                className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                                             >
-                                                <Edit className="size-3.5 inline mr-1" aria-hidden="true" />
-                                                Editar
+                                                <Edit aria-hidden="true" />
+                                                <span className="hidden sm:inline">
+                                                    Editar
+                                                </span>
                                             </button>
                                         )}
                                         {hasPermission('items.delete') && (
                                             <button
                                                 type="button"
-                                                onClick={() =>
-                                                    onDelete?.(item)
-                                                }
-                                                className="rounded-md px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
+                                                onClick={() => onDelete?.(item)}
+                                                aria-label={`Excluir ${item.name}`}
+                                                title="Excluir"
+                                                className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
                                             >
-                                                <Trash2 className="size-3.5 inline mr-1" aria-hidden="true" />
-                                                Excluir
+                                                <Trash2 aria-hidden="true" />
+                                                <span className="hidden sm:inline">
+                                                    Excluir
+                                                </span>
                                             </button>
                                         )}
                                     </div>
@@ -230,8 +231,7 @@ export function ItemsTable({
             <div className="flex flex-col gap-3 border-t border-border/70 px-5 py-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
                 <span>
                     Mostrando {filtered.length ? items.from : 0}–
-                    {filtered.length ? items.to : 0} de {items.total}{' '}
-                    itens
+                    {filtered.length ? items.to : 0} de {items.total} itens
                 </span>
                 <div className="flex items-center gap-2">
                     <button

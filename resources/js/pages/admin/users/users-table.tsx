@@ -4,8 +4,10 @@ import {
     ArrowUp,
     ChevronLeft,
     ChevronRight,
+    Edit,
     Search,
     SlidersHorizontal,
+    Trash2,
     Users,
 } from 'lucide-react';
 import useRole from '@/hooks/use-role';
@@ -214,18 +216,28 @@ export function UsersTable({
                                             <button
                                                 type="button"
                                                 onClick={() => onEdit?.(user)}
-                                                className="rounded-md px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                                                aria-label={`Editar ${user.name}`}
+                                                title="Editar"
+                                                className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                                             >
-                                                Editar
+                                                <Edit aria-hidden="true" />
+                                                <span className="hidden sm:inline">
+                                                    Editar
+                                                </span>
                                             </button>
                                         )}
                                         {hasPermission('users.delete') && (
                                             <button
                                                 type="button"
                                                 onClick={() => onDelete?.(user)}
-                                                className="rounded-md px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
+                                                aria-label={`Excluir ${user.name}`}
+                                                title="Excluir"
+                                                className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
                                             >
-                                                Excluir
+                                                <Trash2 aria-hidden="true" />
+                                                <span className="hidden sm:inline">
+                                                    Excluir
+                                                </span>
                                             </button>
                                         )}
                                     </div>
