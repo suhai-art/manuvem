@@ -17,8 +17,7 @@ class UpdateItemRequest extends FormRequest
             'internal_code' => ['required', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
-            'default_unit_price' => ['required', 'numeric', 'min:0'],
-            'production_time_hours' => ['required', 'integer', 'min:0'],
+            'default_unit_price' => ['required', 'numeric', 'min:0']
         ];
     }
 }
