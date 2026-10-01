@@ -13,7 +13,13 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $permissions = [];
+        $permissions = [
+            'items.view',
+            'items.create',
+            'items.update',
+            'items.delete',
+
+        ];
 
         $adminPermissions = array_merge([
             'users.view',
