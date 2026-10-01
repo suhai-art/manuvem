@@ -26,6 +26,7 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
+    SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index } from '@/routes/admin/users';
@@ -85,7 +86,9 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarSeparator />
+
+            <SidebarContent className='mt-5'>
                 <NavMain
                     items={mainNavItems.filter(
                         (item) =>
@@ -130,7 +133,7 @@ export function AppSidebar() {
                         >
                             <SidebarMenuItem>
                                 <CollapsibleTrigger asChild>
-                                    <SidebarMenuButton tooltip="Administração">
+                                    <SidebarMenuButton  className='py-5 text-l my-1' tooltip="Administração">
                                         <Settings />
                                         <span>Configurações</span>
 
@@ -157,6 +160,7 @@ export function AppSidebar() {
                                                 >
                                                     <SidebarMenuSubButton
                                                         asChild
+                                                        className='py-5 text-l'
                                                         isActive={isCurrentUrl(
                                                             item.href,
                                                         )}

@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { ArrowLeft, Save, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, PencilRuler, Save, ShoppingCart } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { index } from '@/routes/items';
@@ -59,7 +59,7 @@ export function ItemForm({
                 </button>
                 <div className="flex items-start gap-3">
                     <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                        <ShoppingCart
+                        <PencilRuler
                             className="size-5"
                             aria-hidden="true"
                         />

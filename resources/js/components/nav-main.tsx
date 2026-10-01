@@ -16,9 +16,10 @@ export function NavMain({ items }: { items: NavItem[] }) {
         <SidebarGroup className="px-2 py-0">
             <SidebarMenu>
                 {items.map((item) => (
-                    <SidebarMenuItem key={item.title}>
+                    <SidebarMenuItem key={item.title} >
                         <SidebarMenuButton
                             asChild
+                            className='py-5 text-l my-1'
                             isActive={isCurrentUrl(item.href)}
                             tooltip={{ children: item.title }}
                         >
