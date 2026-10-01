@@ -45,7 +45,7 @@ const footerNavItems: NavItem[] = [];
 
 const adminItems: NavItem[] = [
     {
-        title: 'Roles',
+        title: 'Cargos',
         href: rolesIndex(),
         icon: Shield,
         permissions: ['roles.view'],

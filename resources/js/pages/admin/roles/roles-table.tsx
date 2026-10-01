@@ -44,8 +44,6 @@ export function RolesTable({
         return roles.data.filter((r) => r.name.toLowerCase().includes(q));
     }, [search, roles.data]);
 
-    console.log(filtered[0].id)
-
     return (
         <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
             <div className="flex flex-col gap-4 border-b border-border/70 p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -108,7 +106,7 @@ export function RolesTable({
                             <th scope="col" className="px-5 py-3 font-medium">
                                 Permissões
                             </th>
-                            <th scope="col" className="px-5 py-3 font-medium">
+                            <th scope="col" className="px-5 py-3 font-medium flex justify-end gap-1.5">
                                 Ações
                             </th>
                         </tr>
@@ -144,28 +142,32 @@ export function RolesTable({
                                 </td>
                                 <td className="px-5 py-4">
                                     <div className="flex justify-end gap-1.5">
-                                        <Link
-                                            type="button"
-                                            href={edit.url(role.id)}
-                                            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-                                        >
-                                            <Edit
-                                                className="size-3.5"
-                                                aria-hidden="true"
-                                            />
-                                            Editar
-                                        </Link>
-                                        <button
-                                            type="button"
-                                            onClick={() => onDelete?.(role)}
-                                            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-destructive hover:bg-destructive/10"
-                                        >
-                                            <Trash2
-                                                className="size-3.5"
-                                                aria-hidden="true"
-                                            />
-                                            Excluir
-                                        </button>
+                                        {hasPermission('roles.update') &&
+                                            <Link
+                                                type="button"
+                                                href={edit.url(role.id)}
+                                                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                                            >
+                                                <Edit
+                                                    className="size-3.5"
+                                                    aria-hidden="true"
+                                                />
+                                                Editar
+                                            </Link>
+                                        }
+                                        {hasPermission('roles.delete') &&
+                                            <button
+                                                type="button"
+                                                onClick={() => onDelete?.(role)}
+                                                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-destructive hover:bg-destructive/10"
+                                            >
+                                                <Trash2
+                                                    className="size-3.5"
+                                                    aria-hidden="true"
+                                                />
+                                                Excluir
+                                            </button>
+                                        }
                                     </div>
                                 </td>
                             </tr>

@@ -8,6 +8,7 @@ import {
     SlidersHorizontal,
     Users,
 } from 'lucide-react';
+import useRole from '@/hooks/use-role';
 
 type Role = { id: number; name: string };
 type User = {
@@ -57,13 +58,14 @@ export function UsersTable({
 }) {
     const [search, setSearch] = useState('');
     const [sortAscending, setSortAscending] = useState(false);
+    const { hasPermission } = useRole()
 
     const filteredUsers = useMemo(() => {
         const query = search.trim().toLowerCase();
         const result = query
             ? users.data.filter((user) =>
-                  `${user.name} ${user.email}`.toLowerCase().includes(query),
-              )
+                `${user.name} ${user.email}`.toLowerCase().includes(query),
+            )
             : users.data;
 
         return [...result].sort((a, b) => {
@@ -95,13 +97,14 @@ export function UsersTable({
                     </p>
                 </div>
                 <div className="flex w-full items-center gap-2 sm:w-auto">
-                    <button
-                        type="button"
-                        onClick={onCreate}
-                        className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
-                    >
-                        Novo usuário
-                    </button>
+                    {hasPermission('users.create') &&
+                        <button
+                            type="button"
+                            onClick={onCreate}
+                            className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+                        >
+                            Novo usuário
+                        </button>}
                     <label className="relative flex min-w-0 flex-1 items-center sm:w-64">
                         <Search
                             className="pointer-events-none absolute left-3 size-4 text-muted-foreground"
@@ -142,7 +145,7 @@ export function UsersTable({
                                     }
                                     className="inline-flex items-center gap-1 font-medium hover:text-foreground"
                                 >
-                                    Cadastro
+                                    CADASTRO
                                     {sortAscending ? (
                                         <ArrowUp
                                             className="size-3.5"
@@ -155,6 +158,9 @@ export function UsersTable({
                                         />
                                     )}
                                 </button>
+                            </th>
+                            <th scope="col" className="px-5 py-3 font-medium flex justify-end gap-1.5">
+                                Ações
                             </th>
                         </tr>
                     </thead>
@@ -200,20 +206,24 @@ export function UsersTable({
                                 </td>
                                 <td className="px-5 py-4">
                                     <div className="flex justify-end gap-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => onEdit?.(user)}
-                                            className="rounded-md px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-                                        >
-                                            Editar
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => onDelete?.(user)}
-                                            className="rounded-md px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
-                                        >
-                                            Excluir
-                                        </button>
+                                        {hasPermission('users.update') &&
+                                            <button
+                                                type="button"
+                                                onClick={() => onEdit?.(user)}
+                                                className="rounded-md px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                                            >
+                                                Editar
+                                            </button>
+                                        }
+                                        {hasPermission('users.delete') &&
+                                            <button
+                                                type="button"
+                                                onClick={() => onDelete?.(user)}
+                                                className="rounded-md px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
+                                            >
+                                                Excluir
+                                            </button>
+                                        }
                                     </div>
                                 </td>
                             </tr>
