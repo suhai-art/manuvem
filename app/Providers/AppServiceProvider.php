@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Policies\ItemPolicy;
 use App\Policies\RolePolicy;
+use App\Policies\UserPolicy;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +12,8 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Spatie\Permission\Models\Role;
+use App\Models\Item;
+use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,7 +31,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        Gate::policy(Item::class, ItemPolicy::class);
         Gate::policy(Role::class, RolePolicy::class);
+        Gate::policy(User::class, UserPolicy::class);
     }
 
     /**
