@@ -18,7 +18,10 @@ class PermissionSeeder extends Seeder
             'items.create',
             'items.update',
             'items.delete',
-
+            'clientes.view',
+            'clientes.create',
+            'clientes.update',
+            'clientes.delete',
         ];
 
         $adminPermissions = array_merge([

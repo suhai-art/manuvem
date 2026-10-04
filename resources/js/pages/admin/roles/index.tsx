@@ -1,7 +1,6 @@
 import { Head, usePage, router } from '@inertiajs/react';
 import { index, store, update, destroy } from '@/routes/admin/roles';
 import { RolesTable } from './roles-table';
-import { RoleForm } from './role-form';
 import { useState } from 'react';
 
 type Permission = { id: number; name: string; guard_name: string };
@@ -29,23 +28,6 @@ export default function RolesIndex() {
     const permissions: Permission[] = (props.permissions ?? []) as Permission[];
 
     const [roles, setRoles] = useState<RolesPayload>(initialRoles);
-    const [screen, setScreen] = useState<'index' | 'create' | 'edit'>('index');
-    const [selected, setSelected] = useState<Role | undefined>();
-
-    function save(values: { name: string; permissions: number[] }) {
-        if (screen === 'create') {
-            router.post(store.url(), values, {
-                preserveScroll: true,
-                preserveState: false,
-            });
-        } else if (selected) {
-            router.put(update.url(selected.id), values, {
-                preserveScroll: true,
-                preserveState: false,
-            });
-        }
-        setScreen('index');
-    }
 
     async function remove(role: Role) {
         if (!window.confirm(`Excluir a role "${role.name}"?`)) return;
@@ -60,28 +42,14 @@ export default function RolesIndex() {
             <Head title="Cargos" />
             <main className="min-h-screen bg-muted/20 p-4 sm:p-8">
                 <div className="mx-auto w-full max-w-6xl">
-                    {screen === 'index' ? (
-                        <RolesTable
-                            roles={roles}
-                            onCreate={() => setScreen('create')}
-                            onEdit={(role) => {
-                                setSelected(role);
-                                setScreen('edit');
-                            }}
-                            onDelete={remove}
-                        />
-                    ) : (
-                        <RoleForm
-                            mode={screen}
-                            permissions={permissions}
-                            initialName={selected?.name}
-                            initialPermissions={
-                                selected?.permissions?.map((p) => p.id) ?? []
-                            }
-                            onCancel={() => setScreen('index')}
-                            onSubmit={save}
-                        />
-                    )}
+                    <RolesTable
+                        roles={roles}
+                        onCreate={() => router.visit(store.url())}
+                        onEdit={(role) => {
+                            router.visit(update.url(role.id));
+                        }}
+                        onDelete={remove}
+                    />
                 </div>
             </main>
         </>

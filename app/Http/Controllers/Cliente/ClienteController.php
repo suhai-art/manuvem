@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Cliente;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Cliente\StoreClienteRequest;
-use App\Http\Requests\Admin\Cliente\UpdateClienteRequest;
+use App\Http\Requests\Cliente\StoreClienteRequest;
+use App\Http\Requests\Cliente\UpdateClienteRequest;
 use App\Models\Cliente;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,7 +29,7 @@ class ClienteController extends Controller
         $perPage = (int) $request->input('per_page', 15);
         $clientes = $query->paginate($perPage)->withQueryString();
 
-        return Inertia::render('admin/clientes/index', [
+        return Inertia::render('clientes/index', [
             'clientes' => $clientes,
             'filters' => [
                 'search' => $request->input('search'),
@@ -42,14 +42,14 @@ class ClienteController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('admin/clientes/create');
+        return Inertia::render('clientes/create');
     }
 
     public function store(StoreClienteRequest $request): RedirectResponse
     {
         $cliente = Cliente::create($request->validated());
 
-        return redirect()->route('admin.clientes.index')
+        return redirect()->route('clientes.index')
             ->with('toast', [
                 'type' => 'success',
                 'message' => __('Cliente criado com sucesso.'),
@@ -58,14 +58,14 @@ class ClienteController extends Controller
 
     public function show(Cliente $cliente): Response
     {
-        return Inertia::render('admin/clientes/show', [
+        return Inertia::render('clientes/show', [
             'cliente' => $cliente,
         ]);
     }
 
     public function edit(Cliente $cliente): Response
     {
-        return Inertia::render('admin/clientes/edit', [
+        return Inertia::render('clientes/edit', [
             'cliente' => $cliente,
         ]);
     }
@@ -74,7 +74,7 @@ class ClienteController extends Controller
     {
         $cliente->update($request->validated());
 
-        return redirect()->route('admin.clientes.index')
+        return redirect()->route('clientes.index')
             ->with('toast', [
                 'type' => 'success',
                 'message' => __('Cliente atualizado com sucesso.'),
@@ -85,7 +85,7 @@ class ClienteController extends Controller
     {
         $cliente->delete();
 
-        return redirect()->route('admin.clientes.index')
+        return redirect()->route('clientes.index')
             ->with('toast', [
                 'type' => 'success',
                 'message' => __('Cliente excluído com sucesso.'),

@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Requests\Admin\Cliente;
+namespace App\Http\Requests\Cliente;
 
-use App\Models\Cliente;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateClienteRequest extends FormRequest

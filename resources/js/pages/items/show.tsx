@@ -15,8 +15,7 @@ type Item = {
 };
 
 export default function ItemShow() {
-    const item = (usePage().props as Record<string, unknown>)
-        .item as Item;
+    const item = (usePage().props as Record<string, unknown>).item as Item;
     const { hasPermission } = useRole();
 
     const formatPrice = (value: string) =>
@@ -64,7 +63,10 @@ export default function ItemShow() {
                                     href={`/items/${item.id}/edit`}
                                     className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
                                 >
-                                    <Edit className="size-4" aria-hidden="true" />
+                                    <Edit
+                                        className="size-4"
+                                        aria-hidden="true"
+                                    />
                                     Editar
                                 </a>
                             )}
@@ -74,7 +76,10 @@ export default function ItemShow() {
                                     onClick={handleDelete}
                                     className="inline-flex items-center gap-2 rounded-lg bg-destructive px-3 py-2 text-sm font-medium text-destructive-foreground transition hover:bg-destructive/90"
                                 >
-                                    <Trash2 className="size-4" aria-hidden="true" />
+                                    <Trash2
+                                        className="size-4"
+                                        aria-hidden="true"
+                                    />
                                     Excluir
                                 </button>
                             )}

@@ -6,6 +6,7 @@ import {
     Settings,
     Shield,
     Users,
+    Landmark,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
@@ -32,6 +33,7 @@ import { dashboard } from '@/routes';
 import { index } from '@/routes/admin/users';
 import { index as rolesIndex } from '@/routes/admin/roles';
 import { index as itemsIndex } from '@/routes/items';
+import { index as clientesIndex } from '@/routes/clientes';
 import type { NavItem } from '@/types';
 import useRole from '@/hooks/use-role';
 import { useCurrentUrl } from '@/hooks/use-current-url';
@@ -47,7 +49,13 @@ const mainNavItems: NavItem[] = [
         href: itemsIndex(),
         icon: PencilRuler,
         permissions: ['items.view'],
-    }
+    },
+    {
+        title: 'Clientes',
+        href: clientesIndex(),
+        icon: Landmark,
+        permissions: [],
+    },
 ];
 
 const footerNavItems: NavItem[] = [];
@@ -88,7 +96,7 @@ export function AppSidebar() {
 
             <SidebarSeparator />
 
-            <SidebarContent className='mt-5'>
+            <SidebarContent className="mt-5">
                 <NavMain
                     items={mainNavItems.filter(
                         (item) =>
@@ -133,7 +141,10 @@ export function AppSidebar() {
                         >
                             <SidebarMenuItem>
                                 <CollapsibleTrigger asChild>
-                                    <SidebarMenuButton  className='py-5 text-l my-1' tooltip="Administração">
+                                    <SidebarMenuButton
+                                        className="text-l my-1 py-5"
+                                        tooltip="Administração"
+                                    >
                                         <Settings />
                                         <span>Configurações</span>
 
@@ -160,7 +171,7 @@ export function AppSidebar() {
                                                 >
                                                     <SidebarMenuSubButton
                                                         asChild
-                                                        className='py-5 text-l'
+                                                        className="text-l py-5"
                                                         isActive={isCurrentUrl(
                                                             item.href,
                                                         )}

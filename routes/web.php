@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\ClienteController;
+use App\Http\Controllers\Cliente\ClienteController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Item\ItemController;
 use App\Models\Cliente;
@@ -43,31 +43,31 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('clientes')->group(function () {
         Route::get('', [ClienteController::class, 'index'])
-            ->name('admin.clientes.index')
+            ->name('clientes.index')
             ->middleware('can:viewAny,' . Cliente::class);
 
         Route::get('create', [ClienteController::class, 'create'])
-            ->name('admin.clientes.create')
+            ->name('clientes.create')
             ->middleware('can:create,' . Cliente::class);
 
         Route::post('', [ClienteController::class, 'store'])
-            ->name('admin.clientes.store')
+            ->name('clientes.store')
             ->middleware('can:create,' . Cliente::class);
 
         Route::get('{cliente}', [ClienteController::class, 'show'])
-            ->name('admin.clientes.show')
+            ->name('clientes.show')
             ->middleware('can:view,cliente');
 
         Route::get('{cliente}/edit', [ClienteController::class, 'edit'])
-            ->name('admin.clientes.edit')
+            ->name('clientes.edit')
             ->middleware('can:update,cliente');
 
         Route::put('{cliente}', [ClienteController::class, 'update'])
-            ->name('admin.clientes.update')
+            ->name('clientes.update')
             ->middleware('can:update,cliente');
 
         Route::delete('{cliente}', [ClienteController::class, 'destroy'])
-            ->name('admin.clientes.destroy')
+            ->name('clientes.destroy')
             ->middleware('can:delete,cliente');
     });
 });

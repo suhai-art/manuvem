@@ -32,9 +32,7 @@ export function ItemForm({
     const [description, setDescription] = useState(
         initialValues?.description ?? '',
     );
-    const [price, setPrice] = useState(
-        initialValues?.default_unit_price ?? '',
-    );
+    const [price, setPrice] = useState(initialValues?.default_unit_price ?? '');
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -59,16 +57,11 @@ export function ItemForm({
                 </button>
                 <div className="flex items-start gap-3">
                     <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                        <PencilRuler
-                            className="size-5"
-                            aria-hidden="true"
-                        />
+                        <PencilRuler className="size-5" aria-hidden="true" />
                     </div>
                     <div>
                         <h1 className="text-xl font-semibold tracking-tight">
-                            {mode === 'create'
-                                ? 'Novo item'
-                                : 'Editar item'}
+                            {mode === 'create' ? 'Novo item' : 'Editar item'}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
                             {mode === 'create'
@@ -89,9 +82,7 @@ export function ItemForm({
                         <Input
                             required
                             value={internalCode}
-                            onChange={(e) =>
-                                setInternalCode(e.target.value)
-                            }
+                            onChange={(e) => setInternalCode(e.target.value)}
                             placeholder="Ex.: ITEM-001"
                         />
                     </div>
@@ -125,7 +116,7 @@ export function ItemForm({
                         required
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="min-h-[100px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/20"
+                        className="min-h-[100px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm transition outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                         placeholder="Descreva o item..."
                     />
                 </div>
@@ -143,9 +134,7 @@ export function ItemForm({
                         className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
                     >
                         <Save className="size-4" aria-hidden="true" />
-                        {mode === 'create'
-                            ? 'Criar Item'
-                            : 'Salvar alterações'}
+                        {mode === 'create' ? 'Criar Item' : 'Salvar alterações'}
                     </button>
                 </div>
             </form>
