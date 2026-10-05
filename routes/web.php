@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Cliente\ClienteController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Item\ItemController;
 use App\Models\Cliente;
@@ -9,7 +10,7 @@ use App\Models\Item;
 Route::redirect('/', '/login')->name('home');
 
 Route::middleware('auth')->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('items')->name('items.')->group(function () {
         Route::get('/', [ItemController::class, 'index'])

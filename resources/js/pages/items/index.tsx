@@ -33,14 +33,7 @@ export default function ItemsIndex() {
             <Head title="Itens" />
             <main className="min-h-screen bg-muted/20 p-4 sm:p-8">
                 <div className="mx-auto w-full max-w-6xl">
-                    <ItemsTable
-                        items={items}
-                        onCreate={() => router.visit(store.url())}
-                        onEdit={(item) => {
-                            router.visit(update.url({ item: item.id }));
-                        }}
-                        onDelete={remove}
-                    />
+                    <ItemsTable items={items} />
                 </div>
             </main>
         </>

@@ -28,11 +28,7 @@ const formatDate = (value: string) =>
         year: 'numeric',
     }).format(new Date(value));
 
-export function ClientesTable({
-    clientes,
-}: {
-    clientes: ClientesPayload;
-}) {
+export function ClientesTable({ clientes }: { clientes: ClientesPayload }) {
     const [search, setSearch] = useState('');
     const { hasPermission } = useRole();
 

@@ -11,6 +11,8 @@ import {
     PencilRuler,
 } from 'lucide-react';
 import useRole from '@/hooks/use-role';
+import { Link } from '@inertiajs/react';
+import { create, destroy, edit } from '@/routes/items';
 
 export type Item = {
     id: number;
@@ -31,17 +33,7 @@ export type ItemsPayload = {
     per_page: number;
 };
 
-export function ItemsTable({
-    items,
-    onCreate,
-    onEdit,
-    onDelete,
-}: {
-    items: ItemsPayload;
-    onCreate?: () => void;
-    onEdit?: (item: Item) => void;
-    onDelete?: (item: Item) => void;
-}) {
+export function ItemsTable({ items }: { items: ItemsPayload }) {
     const [search, setSearch] = useState('');
     const [sortAscending, setSortAscending] = useState(false);
     const { hasPermission } = useRole();
@@ -99,13 +91,14 @@ export function ItemsTable({
                 </div>
                 <div className="flex w-full items-center gap-2 sm:w-auto">
                     {hasPermission('items.create') && (
-                        <button
+                        <Link
                             type="button"
-                            onClick={onCreate}
+                            href={create()}
+                            onClick={() => console.log('clicado')}
                             className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
                         >
                             Novo item
-                        </button>
+                        </Link>
                     )}
                     <label className="relative flex min-w-0 flex-1 items-center sm:w-64">
                         <Search
@@ -188,9 +181,9 @@ export function ItemsTable({
                                 <td className="px-5 py-4">
                                     <div className="flex justify-end gap-2">
                                         {hasPermission('items.update') && (
-                                            <button
+                                            <Link
                                                 type="button"
-                                                onClick={() => onEdit?.(item)}
+                                                href={edit.url(item.id)}
                                                 aria-label={`Editar ${item.name}`}
                                                 title="Editar"
                                                 className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -199,12 +192,12 @@ export function ItemsTable({
                                                 <span className="hidden sm:inline">
                                                     Editar
                                                 </span>
-                                            </button>
+                                            </Link>
                                         )}
                                         {hasPermission('items.delete') && (
-                                            <button
+                                            <Link
                                                 type="button"
-                                                onClick={() => onDelete?.(item)}
+                                                href={destroy.url(item.id)}
                                                 aria-label={`Excluir ${item.name}`}
                                                 title="Excluir"
                                                 className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
@@ -213,7 +206,7 @@ export function ItemsTable({
                                                 <span className="hidden sm:inline">
                                                     Excluir
                                                 </span>
-                                            </button>
+                                            </Link>
                                         )}
                                     </div>
                                 </td>

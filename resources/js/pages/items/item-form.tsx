@@ -19,12 +19,7 @@ type ItemFormProps = {
     onSubmit?: (values: ItemValues) => void;
 };
 
-export function ItemForm({
-    mode,
-    initialValues,
-    onCancel,
-    onSubmit,
-}: ItemFormProps) {
+export function ItemForm({ mode, initialValues, onSubmit }: ItemFormProps) {
     const [internalCode, setInternalCode] = useState(
         initialValues?.internal_code ?? '',
     );
@@ -47,14 +42,14 @@ export function ItemForm({
     return (
         <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
             <div className="border-b border-border/70 p-6 sm:p-8">
-                <button
+                <Link
                     type="button"
-                    onClick={onCancel}
+                    href={index()}
                     className="mb-5 inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
                 >
                     <ArrowLeft className="size-4" aria-hidden="true" />
                     Voltar para itens
-                </button>
+                </Link>
                 <div className="flex items-start gap-3">
                     <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                         <PencilRuler className="size-5" aria-hidden="true" />
