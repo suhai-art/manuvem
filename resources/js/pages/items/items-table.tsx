@@ -11,7 +11,7 @@ import {
     PencilRuler,
 } from 'lucide-react';
 import useRole from '@/hooks/use-role';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { create, destroy, edit } from '@/routes/items';
 
 export type Item = {
@@ -68,6 +68,14 @@ export function ItemsTable({ items }: { items: ItemsPayload }) {
             month: 'short',
             year: 'numeric',
         }).format(new Date(value));
+
+    function handleDelete(item) {
+            if (!window.confirm(`Excluir o item "${item.name}"?`)) return;
+            router.delete(destroy.url({ item: item.id }), {
+                preserveScroll: true,
+                preserveState: false,
+            });
+        }
 
     return (
         <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
@@ -195,9 +203,9 @@ export function ItemsTable({ items }: { items: ItemsPayload }) {
                                             </Link>
                                         )}
                                         {hasPermission('items.delete') && (
-                                            <Link
+                                            <button
                                                 type="button"
-                                                href={destroy.url(item.id)}
+                                                onClick={() => handleDelete(item)}
                                                 aria-label={`Excluir ${item.name}`}
                                                 title="Excluir"
                                                 className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
@@ -206,7 +214,7 @@ export function ItemsTable({ items }: { items: ItemsPayload }) {
                                                 <span className="hidden sm:inline">
                                                     Excluir
                                                 </span>
-                                            </Link>
+                                            </button>
                                         )}
                                     </div>
                                 </td>

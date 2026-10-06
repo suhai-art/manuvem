@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Search, Edit, Trash2, Eye, Landmark } from 'lucide-react';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import useRole from '@/hooks/use-role';
 import { edit, show, create, destroy } from '@/routes/clientes';
 
@@ -41,6 +41,14 @@ export function ClientesTable({ clientes }: { clientes: ClientesPayload }) {
                 (c.documento ?? '').toLowerCase().includes(q),
         );
     }, [search, clientes.data]);
+
+    function handleDelete(cliente) {
+        if (!window.confirm(`Excluir o item "${cliente.name}"?`)) return;
+        router.delete(destroy.url({ cliente: cliente.id }), {
+            preserveScroll: true,
+            preserveState: false,
+        });
+    }
 
     return (
         <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
@@ -157,9 +165,9 @@ export function ClientesTable({ clientes }: { clientes: ClientesPayload }) {
                                             </Link>
                                         )}
                                         {hasPermission('clientes.delete') && (
-                                            <Link
+                                            <button
                                                 type="button"
-                                                href={destroy.url(cliente.id)}
+                                                onClick={() => handleDelete(cliente)}
                                                 aria-label={`Excluir ${cliente.name}`}
                                                 title="Excluir"
                                                 className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-destructive hover:bg-destructive/10"
@@ -168,7 +176,7 @@ export function ClientesTable({ clientes }: { clientes: ClientesPayload }) {
                                                 <span className="hidden sm:inline">
                                                     Excluir
                                                 </span>
-                                            </Link>
+                                            </button>
                                         )}
                                     </div>
                                 </td>
