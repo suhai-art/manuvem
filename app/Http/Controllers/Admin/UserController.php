@@ -76,12 +76,9 @@ class UserController extends Controller
             'password' => \Illuminate\Support\Facades\Hash::make($request->validated('password')),
         ]);
 
+
         if ($request->filled('roles')) {
             $user->syncRoles($request->validated('roles'));
-        }
-
-        if ($request->filled('permissions')) {
-            $user->syncPermissions($request->validated('permissions'));
         }
 
         return redirect()->route('admin.users.index')

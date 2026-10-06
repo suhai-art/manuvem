@@ -1,5 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { ArrowLeft, Eye, EyeOff, Save, ShieldCheck } from 'lucide-react';
+import { Link } from '@inertiajs/react';
+import { index } from '@/routes/admin/users';
 
 type UserFormProps = {
     mode: 'create' | 'edit';
@@ -10,7 +12,7 @@ type UserFormProps = {
         name: string;
         email: string;
         password: string;
-        role: string;
+        roles: string[];
     }) => void;
 };
 
@@ -29,20 +31,20 @@ export function UserForm({
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        onSubmit?.({ name, email, password, role });
+        onSubmit?.({ name, email, password, roles: [role] });
     }
 
     return (
         <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
             <div className="border-b border-border/70 p-6 sm:p-8">
-                <button
+                <Link
                     type="button"
-                    onClick={onCancel}
+                    href={index()}
                     className="mb-5 inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
                 >
                     <ArrowLeft className="size-4" aria-hidden="true" /> Voltar
                     para usuários
-                </button>
+                </Link>
                 <div className="flex items-start gap-3">
                     <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                         <ShieldCheck className="size-5" aria-hidden="true" />
@@ -146,13 +148,13 @@ export function UserForm({
                     </label>
                 </div>
                 <div className="flex justify-end gap-3 border-t border-border/70 pt-6">
-                    <button
+                    <Link
                         type="button"
-                        onClick={onCancel}
+                        href={index()}
                         className="rounded-lg border border-input px-4 py-2 text-sm font-medium transition hover:bg-muted"
                     >
                         Cancelar
-                    </button>
+                    </Link>
                     <button
                         type="submit"
                         className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"

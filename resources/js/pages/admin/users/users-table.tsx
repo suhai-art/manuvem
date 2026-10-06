@@ -11,6 +11,8 @@ import {
     Users,
 } from 'lucide-react';
 import useRole from '@/hooks/use-role';
+import { Link } from '@inertiajs/react';
+import { create, edit } from '@/routes/admin/users';
 
 type Role = { id: number; name: string };
 type User = {
@@ -100,13 +102,13 @@ export function UsersTable({
                 </div>
                 <div className="flex w-full items-center gap-2 sm:w-auto">
                     {hasPermission('users.create') && (
-                        <button
+                        <Link
                             type="button"
-                            onClick={onCreate}
+                            href={create()}
                             className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
                         >
                             Novo usuário
-                        </button>
+                        </Link>
                     )}
                     <label className="relative flex min-w-0 flex-1 items-center sm:w-64">
                         <Search
@@ -213,9 +215,9 @@ export function UsersTable({
                                 <td className="px-5 py-4">
                                     <div className="flex justify-end gap-2">
                                         {hasPermission('users.update') && (
-                                            <button
+                                            <Link
                                                 type="button"
-                                                onClick={() => onEdit?.(user)}
+                                                href={edit.url(user.id)}
                                                 aria-label={`Editar ${user.name}`}
                                                 title="Editar"
                                                 className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -224,7 +226,7 @@ export function UsersTable({
                                                 <span className="hidden sm:inline">
                                                     Editar
                                                 </span>
-                                            </button>
+                                            </Link>
                                         )}
                                         {hasPermission('users.delete') && (
                                             <button

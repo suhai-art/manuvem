@@ -24,11 +24,9 @@ class StoreUserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => ['required', Password::defaults()],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['string', 'exists:roles,name'],
-            'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['string', 'exists:permissions,name'],
         ];
     }
 
@@ -40,7 +38,6 @@ class StoreUserRequest extends FormRequest
         return [
             'email.unique' => 'Este e-mail já está em uso.',
             'roles.*.exists' => 'Uma das roles selecionadas não existe.',
-            'permissions.*.exists' => 'Uma das permissões selecionadas não existe.',
         ];
     }
 }
