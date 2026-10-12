@@ -26,7 +26,7 @@ class UpdateUserRequest extends FormRequest
                 'required',
                 'email',
                 'max:255',
-                'unique:users,email,' . $this->route('user')->id,
+                'unique:users,email,'.$this->route('user')->id,
             ],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['string', 'exists:roles,name'],

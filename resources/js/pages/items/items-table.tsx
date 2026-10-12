@@ -13,25 +13,20 @@ import {
 import useRole from '@/hooks/use-role';
 import { Link, router } from '@inertiajs/react';
 import { create, destroy, edit } from '@/routes/items';
+import { Item, ItemsPayload } from '@/models/Item';
 
-export type Item = {
-    id: number;
-    internal_code: string;
-    name: string;
-    description: string;
-    default_unit_price: string;
-    created_at: string;
-};
+const formatPrice = (value: string) =>
+    new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    }).format(Number(value));
 
-export type ItemsPayload = {
-    data: Item[];
-    current_page: number;
-    last_page: number;
-    from: number | null;
-    to: number | null;
-    total: number;
-    per_page: number;
-};
+const formatDate = (value: string) =>
+    new Intl.DateTimeFormat('pt-BR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    }).format(new Date(value));
 
 export function ItemsTable({ items }: { items: ItemsPayload }) {
     const [search, setSearch] = useState('');
@@ -56,26 +51,13 @@ export function ItemsTable({ items }: { items: ItemsPayload }) {
         });
     }, [search, sortAscending, items.data]);
 
-    const formatPrice = (value: string) =>
-        new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        }).format(Number(value));
-
-    const formatDate = (value: string) =>
-        new Intl.DateTimeFormat('pt-BR', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-        }).format(new Date(value));
-
-    function handleDelete(item) {
-            if (!window.confirm(`Excluir o item "${item.name}"?`)) return;
-            router.delete(destroy.url({ item: item.id }), {
-                preserveScroll: true,
-                preserveState: false,
-            });
-        }
+    function handleDelete(item: Item) {
+        if (!window.confirm(`Excluir o item "${item.name}"?`)) return;
+        router.delete(destroy.url({ item: item.id }), {
+            preserveScroll: true,
+            preserveState: false,
+        });
+    }
 
     return (
         <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
@@ -113,7 +95,7 @@ export function ItemsTable({ items }: { items: ItemsPayload }) {
                             className="pointer-events-none absolute left-3 size-4 text-muted-foreground"
                             aria-hidden="true"
                         />
-                        <span className="sr-only">Buscar itens</span>
+                        <span className="sr-only">Buscar item</span>
                         <input
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -205,7 +187,9 @@ export function ItemsTable({ items }: { items: ItemsPayload }) {
                                         {hasPermission('items.delete') && (
                                             <button
                                                 type="button"
-                                                onClick={() => handleDelete(item)}
+                                                onClick={() =>
+                                                    handleDelete(item)
+                                                }
                                                 aria-label={`Excluir ${item.name}`}
                                                 title="Excluir"
                                                 className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
@@ -259,3 +243,5 @@ export function ItemsTable({ items }: { items: ItemsPayload }) {
         </section>
     );
 }
+
+export type { Item, ItemsPayload };

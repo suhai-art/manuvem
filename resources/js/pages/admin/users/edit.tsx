@@ -17,7 +17,12 @@ type PageProps = {
 export default function UserEdit() {
     const { user, roles } = usePage<PageProps>().props;
 
-    function save(values: { name: string; email: string; password: string; roles: string[] }) {
+    function save(values: {
+        name: string;
+        email: string;
+        password: string;
+        roles: string[];
+    }) {
         router.put(update.url({ user: user.id }), values, {
             preserveScroll: true,
             preserveState: false,
@@ -32,7 +37,11 @@ export default function UserEdit() {
                     <UserForm
                         mode="edit"
                         roles={roles}
-                        initialValues={{ name: user.name, email: user.email, role: user.roles[0]?.name ?? '' }}
+                        initialValues={{
+                            name: user.name,
+                            email: user.email,
+                            role: user.roles[0]?.name ?? '',
+                        }}
                         onCancel={() => router.visit('/admin/users')}
                         onSubmit={save}
                     />

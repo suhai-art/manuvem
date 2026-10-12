@@ -2,8 +2,7 @@
 
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Item\ItemController;
-use App\Models\Item;
+use App\Http\Controllers\Venda\VendaController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
@@ -12,15 +11,15 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::prefix('roles')->group(function () {
         Route::get('', [RoleController::class, 'index'])
             ->name('admin.roles.index')
-            ->middleware('can:viewAny,' . Role::class);
+            ->middleware('can:viewAny,'.Role::class);
 
         Route::get('create', [RoleController::class, 'create'])
             ->name('admin.roles.create')
-            ->middleware('can:create,' . Role::class);
+            ->middleware('can:create,'.Role::class);
 
         Route::post('', [RoleController::class, 'store'])
             ->name('admin.roles.store')
-            ->middleware('can:create,' . Role::class);
+            ->middleware('can:create,'.Role::class);
 
         Route::get('{role}', [RoleController::class, 'show'])
             ->name('admin.roles.show')
@@ -39,18 +38,18 @@ Route::prefix('admin')->middleware('auth')->group(function () {
             ->middleware('can:delete,role');
     });
 
-    Route::prefix('users')->group(function() {
+    Route::prefix('users')->group(function () {
         Route::get('', [UserController::class, 'index'])
             ->name('admin.users.index')
-            ->middleware('can:viewAny,' . User::class);
+            ->middleware('can:viewAny,'.User::class);
 
         Route::get('create', [UserController::class, 'create'])
             ->name('admin.users.create')
-            ->middleware('can:create,' . User::class);
+            ->middleware('can:create,'.User::class);
 
         Route::post('', [UserController::class, 'store'])
             ->name('admin.users.store')
-            ->middleware('can:create,' . User::class);
+            ->middleware('can:create,'.User::class);
 
         Route::get('{user}', [UserController::class, 'show'])
             ->name('admin.users.show')
@@ -67,7 +66,5 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::delete('{user}', [UserController::class, 'destroy'])
             ->name('admin.users.destroy')
             ->middleware('can:delete,user');
-
     });
-
 });

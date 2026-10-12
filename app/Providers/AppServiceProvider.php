@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Item;
+use App\Models\User;
 use App\Policies\ItemPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
@@ -12,8 +14,6 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Spatie\Permission\Models\Role;
-use App\Models\Item;
-use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {

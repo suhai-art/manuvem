@@ -9,8 +9,13 @@ type PageProps = {
 export default function UserCreate() {
     const { roles } = usePage<PageProps>().props;
 
-    function save(values: { name: string; email: string; password: string; roles: string[] }) {
-        console.log(values)
+    function save(values: {
+        name: string;
+        email: string;
+        password: string;
+        roles: string[];
+    }) {
+        console.log(values);
         router.post(store.url(), values, {
             preserveScroll: true,
         });

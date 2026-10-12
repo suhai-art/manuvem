@@ -8,8 +8,10 @@ use App\Http\Requests\Admin\User\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -32,13 +34,13 @@ class UserController extends Controller
 
         if ($request->filled('role')) {
             $role = $request->input('role');
-            $query->whereHas('roles', fn($q) => $q->where('name', $role));
+            $query->whereHas('roles', fn ($q) => $q->where('name', $role));
         }
 
         $perPage = (int) $request->input('per_page', 15);
         $users = $query->paginate($perPage)->withQueryString();
 
-        $roles = \Spatie\Permission\Models\Role::pluck('name')->values();
+        $roles = Role::pluck('name')->values();
 
         return Inertia::render('admin/users/index', [
             'users' => $users,
@@ -58,7 +60,7 @@ class UserController extends Controller
      */
     public function create(): Response
     {
-        $roles = \Spatie\Permission\Models\Role::pluck('name')->values();
+        $roles = Role::pluck('name')->values();
 
         return Inertia::render('admin/users/create', [
             'roles' => $roles,
@@ -73,9 +75,8 @@ class UserController extends Controller
         $user = User::create([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
-            'password' => \Illuminate\Support\Facades\Hash::make($request->validated('password')),
+            'password' => Hash::make($request->validated('password')),
         ]);
-
 
         if ($request->filled('roles')) {
             $user->syncRoles($request->validated('roles'));
@@ -103,7 +104,7 @@ class UserController extends Controller
      */
     public function edit(User $user): Response
     {
-        $roles = \Spatie\Permission\Models\Role::pluck('name')->values();
+        $roles = Role::pluck('name')->values();
 
         return Inertia::render('admin/users/edit', [
             'user' => $user->load('roles'),

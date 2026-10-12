@@ -7,6 +7,7 @@ import {
     Shield,
     Users,
     Landmark,
+    Coins,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
@@ -30,10 +31,11 @@ import {
     SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import { index } from '@/routes/admin/users';
 import { index as rolesIndex } from '@/routes/admin/roles';
 import { index as itemsIndex } from '@/routes/items';
 import { index as clientesIndex } from '@/routes/clientes';
+import { index as usersIndex } from '@/routes/admin/users';
+import { index as vendasIndex } from '@/routes/vendas';
 import type { NavItem } from '@/types';
 import useRole from '@/hooks/use-role';
 import { useCurrentUrl } from '@/hooks/use-current-url';
@@ -45,6 +47,12 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
+        title: 'Vendas',
+        href: vendasIndex(),
+        icon: Coins,
+        permissions: ['vendas.view'],
+    },
+    {
         title: 'Items',
         href: itemsIndex(),
         icon: PencilRuler,
@@ -54,7 +62,7 @@ const mainNavItems: NavItem[] = [
         title: 'Clientes',
         href: clientesIndex(),
         icon: Landmark,
-        permissions: [],
+        permissions: ['clientes.view'],
     },
 ];
 
@@ -69,7 +77,7 @@ const adminItems: NavItem[] = [
     },
     {
         title: 'Usuários',
-        href: index(),
+        href: usersIndex(),
         icon: Users,
         permissions: ['users.view'],
     },
