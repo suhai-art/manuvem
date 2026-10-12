@@ -208,6 +208,19 @@ function handleItemChange(
     form.setData(updateItem.bind(null, uid, field, value));
 }
 
+function handleItemSelection(
+    onChange: VendaItemRowProps['onChange'],
+    uid: string,
+    items: Item[],
+    value: string,
+): void {
+    const selectedItem = items.find((item) => item.id === Number(value));
+    if (!selectedItem) return;
+
+    onChange(uid, 'item_id', value);
+    onChange(uid, 'unit_price', selectedItem.default_unit_price);
+}
+
 function handleClienteChange(
     form: InertiaFormProps<VendaDraft>,
     value: string,
@@ -400,7 +413,12 @@ function VendaItemRow({
                 <Label className="text-xs">Item</Label>
                 <Select
                     value={item.item_id ? String(item.item_id) : ''}
-                    onValueChange={onChange.bind(null, item.uid, 'item_id')}
+                    onValueChange={handleItemSelection.bind(
+                        null,
+                        onChange,
+                        item.uid,
+                        items,
+                    )}
                 >
                     <SelectTrigger>
                         <SelectValue placeholder="Selecione um item" />
@@ -466,7 +484,7 @@ function VendaItemRow({
             <div className="col-span-12 flex items-end justify-end sm:col-span-1">
                 <Button
                     type="button"
-                    variant="ghost"
+                    variant="destructive"
                     size="sm"
                     onClick={onRemove.bind(null, item.uid)}
                     disabled={!canRemove}
@@ -559,7 +577,7 @@ function VendaForm({
                 </div>
                 <Button
                     type="button"
-                    variant="outline"
+                    variant="default"
                     size="sm"
                     onClick={handleAddItem.bind(null, form)}
                     className="gap-1.5"

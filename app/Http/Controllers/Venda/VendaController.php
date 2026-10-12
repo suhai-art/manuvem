@@ -113,7 +113,7 @@ class VendaController extends Controller
             'clientes' => Cliente::select('id', 'name', 'documento')
                 ->orderBy('name')
                 ->get(),
-            'items' => Item::select('id', 'name')
+            'items' => Item::select('id', 'name', 'default_unit_price')
                 ->orderBy('name')
                 ->get(),
         ];
