@@ -10,6 +10,7 @@ import {
     ChevronRight,
     Coins,
     Eye,
+    MoreHorizontal,
     PencilRuler,
     Plus,
     Star,
@@ -17,8 +18,24 @@ import {
     ArrowUp,
     ArrowDown,
 } from 'lucide-react';
-import { create, destroy, show, edit, index, store, update } from '@/routes/vendas';
+import {
+    create,
+    destroy,
+    edit,
+    show,
+} from '@/routes/vendas';
 import { Venda, VendaItem, VendasPayload } from '@/models/Venda';
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 type VendasTableProps = {
     vendas: VendasPayload;
@@ -37,6 +54,13 @@ const statusClasses: Record<Venda['status'], string> = {
     completed: 'bg-emerald-100 text-emerald-700',
     cancelled: 'bg-red-100 text-red-700',
 };
+
+const formatDate = (value: string) =>
+    new Intl.DateTimeFormat('pt-BR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    }).format(new Date(value));
 
 export default function VendasTable({ vendas }: VendasTableProps) {
     const [search, setSearch] = useState('');
@@ -79,6 +103,26 @@ export default function VendasTable({ vendas }: VendasTableProps) {
             preserveScroll: true,
             preserveState: false,
         });
+    }
+
+    function handleStatusChange(venda: Venda, status: Venda['status']) {
+        if (status === venda.status) return;
+
+        router.patch(
+            `${show.url(venda.id)}/status`,
+            { status },
+            { preserveScroll: true },
+        );
+    }
+
+    function handlePriorityChange(venda: Venda, isPriority: boolean) {
+        if (isPriority === venda.is_priority) return;
+
+        router.patch(
+            `${show.url(venda.id)}/priority`,
+            { is_priority: isPriority },
+            { preserveScroll: true },
+        );
     }
 
     return (
@@ -208,54 +252,133 @@ export default function VendasTable({ vendas }: VendasTableProps) {
                                     {formatTotal(venda.total)}
                                 </td>
                                 <td className="px-5 py-4 text-muted-foreground">
-                                    {venda.created_at}
+                                    {formatDate(venda.created_at)}
                                 </td>
                                 <td className="px-5 py-4">
-                                    <div className="flex justify-end gap-1.5">
-                                        {hasPermission('vendas.view') && (
-                                            <Link
-                                                type="button"
-                                                href={show.url(venda.id)}
-                                                aria-label={`Ver venda ${venda.id}`}
-                                                title="Ver"
-                                                className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-                                            >
-                                                <Eye aria-hidden="true" />
-                                                <span className="hidden sm:inline">
-                                                    Ver
-                                                </span>
-                                            </Link>
-                                        )}
-                                        {hasPermission('vendas.update') && (
-                                            <Link
-                                                type="button"
-                                                href={edit.url(venda.id)}
-                                                aria-label={`Editar venda ${venda.id}`}
-                                                title="Editar"
-                                                className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-                                            >
-                                                <PencilRuler aria-hidden="true" />
-                                                <span className="hidden sm:inline">
-                                                    Editar
-                                                </span>
-                                            </Link>
-                                        )}
-                                        {hasPermission('vendas.delete') && (
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    handleDelete(venda)
-                                                }
-                                                aria-label={`Excluir venda ${venda.id}`}
-                                                title="Excluir"
-                                                className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-destructive hover:bg-destructive/10"
-                                            >
-                                                <Trash2 aria-hidden="true" />
-                                                <span className="hidden sm:inline">
-                                                    Excluir
-                                                </span>
-                                            </button>
-                                        )}
+                                    <div className="flex justify-end">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <button
+                                                    type="button"
+                                                    aria-label={`Ações da venda ${venda.id}`}
+                                                    title="Ações"
+                                                    className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+                                                >
+                                                    <MoreHorizontal
+                                                        className="size-4"
+                                                        aria-hidden="true"
+                                                    />
+                                                </button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                {hasPermission(
+                                                    'vendas.update',
+                                                ) && (
+                                                    <>
+                                                        <DropdownMenuLabel>
+                                                            Alterar status
+                                                        </DropdownMenuLabel>
+                                                        <DropdownMenuRadioGroup
+                                                            value={venda.status}
+                                                            onValueChange={(
+                                                                status,
+                                                            ) =>
+                                                                handleStatusChange(
+                                                                    venda,
+                                                                    status as Venda['status'],
+                                                                )
+                                                            }
+                                                        >
+                                                            {Object.entries(
+                                                                statusLabels,
+                                                            ).map(
+                                                                ([
+                                                                    status,
+                                                                    label,
+                                                                ]) => (
+                                                                    <DropdownMenuRadioItem
+                                                                        key={
+                                                                            status
+                                                                        }
+                                                                        value={
+                                                                            status
+                                                                        }
+                                                                    >
+                                                                        {label}
+                                                                    </DropdownMenuRadioItem>
+                                                                ),
+                                                            )}
+                                                        </DropdownMenuRadioGroup>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuCheckboxItem
+                                                            checked={
+                                                                venda.is_priority
+                                                            }
+                                                            onCheckedChange={(
+                                                                checked,
+                                                            ) =>
+                                                                handlePriorityChange(
+                                                                    venda,
+                                                                    checked ===
+                                                                        true,
+                                                                )
+                                                            }
+                                                        >
+                                                            Prioridade
+                                                        </DropdownMenuCheckboxItem>
+                                                        {(hasPermission(
+                                                            'vendas.view',
+                                                        ) ||
+                                                            hasPermission(
+                                                                'vendas.delete',
+                                                            )) && (
+                                                            <DropdownMenuSeparator />
+                                                        )}
+                                                    </>
+                                                )}
+                                                {hasPermission(
+                                                    'vendas.view',
+                                                ) && (
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href={show.url(
+                                                                venda.id,
+                                                            )}
+                                                        >
+                                                            <Eye aria-hidden="true" />
+                                                            Ver
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                )}
+                                                {hasPermission(
+                                                    'vendas.update',
+                                                ) && (
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href={edit.url(
+                                                                venda.id,
+                                                            )}
+                                                        >
+                                                            <PencilRuler aria-hidden="true" />
+                                                            Editar
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                )}
+                                                {hasPermission(
+                                                    'vendas.delete',
+                                                ) && (
+                                                    <DropdownMenuItem
+                                                        variant="destructive"
+                                                        onClick={() =>
+                                                            handleDelete(venda)
+                                                        }
+                                                    >
+                                                        <Trash2 aria-hidden="true" />
+                                                        Excluir
+                                                    </DropdownMenuItem>
+                                                )}
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </div>
                                 </td>
                             </tr>

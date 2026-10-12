@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Venda\StoreVendaRequest;
 use App\Http\Requests\Venda\UpdateVendaRequest;
 use App\Models\Cliente;
+use App\Models\Enums\VendaStatus;
 use App\Models\Item;
 use App\Models\Venda;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Validation\Rule;
 
 class VendaController extends Controller
 {
@@ -64,6 +67,32 @@ class VendaController extends Controller
         $this->syncItens($venda, $data['itens'] ?? []);
 
         return $this->redirectWithToast(__('Venda atualizada com sucesso.'));
+    }
+
+    public function updateStatus(Request $request, Venda $venda): RedirectResponse
+    {
+        $data = $request->validate([
+            'status' => ['required', Rule::enum(VendaStatus::class)],
+        ]);
+
+        $venda->update([
+            'status' => VendaStatus::from($data['status']),
+        ]);
+
+        return $this->redirectWithToast(__('Status da venda atualizado com sucesso.'));
+    }
+
+    public function updatePriority(Request $request, Venda $venda): RedirectResponse
+    {
+        $data = $request->validate([
+            'is_priority' => ['required', 'boolean'],
+        ]);
+
+        $venda->update([
+            'is_priority' => $data['is_priority'],
+        ]);
+
+        return $this->redirectWithToast(__('Prioridade da venda atualizada com sucesso.'));
     }
 
     public function destroy(Venda $venda): RedirectResponse

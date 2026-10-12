@@ -99,6 +99,14 @@ Route::middleware('auth')->group(function () {
             ->name('update')
             ->middleware('can:update,venda');
 
+        Route::patch('{venda}/status', [VendaController::class, 'updateStatus'])
+            ->name('update-status')
+            ->middleware('can:update,venda');
+
+        Route::patch('{venda}/priority', [VendaController::class, 'updatePriority'])
+            ->name('update-priority')
+            ->middleware('can:update,venda');
+
         Route::delete('{venda}', [VendaController::class, 'destroy'])
             ->name('destroy')
             ->middleware('can:delete,venda');
