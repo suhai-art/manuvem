@@ -57,7 +57,7 @@ class Venda extends Model
     public function itens(): BelongsToMany
     {
         return $this->belongsToMany(Item::class, 'venda_item', 'venda_id', 'item_id')
-            ->withPivot('quantity', 'unit_price')
+            ->withPivot('quantity', 'unit_price', 'description')
             ->withTimestamps();
     }
 }

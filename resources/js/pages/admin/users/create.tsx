@@ -15,7 +15,6 @@ export default function UserCreate() {
         password: string;
         roles: string[];
     }) {
-        console.log(values);
         router.post(store.url(), values, {
             preserveScroll: true,
         });

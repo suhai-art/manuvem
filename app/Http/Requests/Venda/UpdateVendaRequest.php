@@ -21,6 +21,7 @@ class UpdateVendaRequest extends FormRequest
             'itens.*.item_id' => ['required', 'integer', 'exists:items,id'],
             'itens.*.quantity' => ['required', 'integer', 'min:1'],
             'itens.*.unit_price' => ['required', 'numeric', 'min:0'],
+            'itens.*.description' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

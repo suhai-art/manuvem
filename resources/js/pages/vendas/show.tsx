@@ -48,7 +48,6 @@ const formatDate = (value?: string) => {
 
 export default function VendasShow({ venda }: VendasShowProps) {
     const itens = venda.itens ?? [];
-    console.log(itens)
 
     return (
         <>
@@ -128,6 +127,7 @@ export default function VendasShow({ venda }: VendasShowProps) {
                                     <thead className="bg-muted/40 text-xs tracking-wider text-muted-foreground uppercase">
                                         <tr>
                                             <th className="px-5 py-3 font-medium">Item</th>
+                                            <th className="px-5 py-3 font-medium">Descrição</th>
                                             <th className="px-5 py-3 font-medium">Quantidade</th>
                                             <th className="px-5 py-3 font-medium">Preço unitário</th>
                                             <th className="px-5 py-3 text-right font-medium">Subtotal</th>
@@ -135,11 +135,11 @@ export default function VendasShow({ venda }: VendasShowProps) {
                                     </thead>
                                     <tbody className="divide-y divide-border/60">
                                         {itens.map((item, itemIndex) => {
-                                            console.log(item)
                                             const subtotal = Number(item.subtotal ?? Number(item.pivot.quantity) * Number(item.pivot.unit_price));
                                             return (
                                                 <tr key={`${item.item_id ?? item.item?.id ?? 'item'}-${itemIndex}`}>
                                                     <td className="px-5 py-4 font-medium">{item.name ?? 'Item não informado'}</td>
+                                                    <td className="px-5 py-4 text-muted-foreground">{item.pivot.description || '—'}</td>
                                                     <td className="px-5 py-4 text-muted-foreground">{item.pivot.quantity}</td>
                                                     <td className="px-5 py-4 text-muted-foreground">{formatCurrency(item.pivot.unit_price)}</td>
                                                     <td className="px-5 py-4 text-right font-semibold">{formatCurrency(subtotal)}</td>

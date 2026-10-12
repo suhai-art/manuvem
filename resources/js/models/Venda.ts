@@ -14,6 +14,7 @@ export type VendaItem = {
     item_id?: number;
     quantity: number;
     unit_price: number;
+    description?: string;
     subtotal?: number;
 };
 

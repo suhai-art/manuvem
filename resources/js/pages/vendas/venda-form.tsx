@@ -37,7 +37,7 @@ import {
 /* -------------------------------------------------------------------------- */
 
 type VendaStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled';
-type VendaItemField = 'item_id' | 'quantity' | 'unit_price';
+type VendaItemField = 'item_id' | 'quantity' | 'unit_price' | 'description';
 type ClienteField = 'name' | 'documento';
 
 type VendaItemDraft = {
@@ -45,6 +45,7 @@ type VendaItemDraft = {
     item_id: number | null;
     quantity: string;
     unit_price: string;
+    description: string;
 };
 
 type VendaDraft = {
@@ -103,6 +104,7 @@ const createEmptyItem = (): VendaItemDraft => ({
     item_id: null,
     quantity: '1',
     unit_price: '',
+    description: '',
 });
 
 const toItemDraft = (vendaItem: VendaItem): VendaItemDraft => ({
@@ -110,6 +112,7 @@ const toItemDraft = (vendaItem: VendaItem): VendaItemDraft => ({
     item_id: vendaItem.item?.id ?? vendaItem.item_id ?? null,
     quantity: String(vendaItem.quantity),
     unit_price: String(vendaItem.unit_price),
+    description: vendaItem.description ?? '',
 });
 
 const buildInitialDraft = (venda?: Venda): VendaDraft => ({
@@ -152,10 +155,11 @@ const toVendaPayload = (draft: VendaDraft) => ({
     cliente_id: draft.cliente_id,
     status: draft.status,
     is_priority: draft.is_priority,
-    itens: draft.itens.map(({ item_id, quantity, unit_price }) => ({
+    itens: draft.itens.map(({ item_id, quantity, unit_price, description }) => ({
         item_id,
         quantity: Number(quantity),
         unit_price: Number(unit_price),
+        description,
     })),
 });
 
@@ -392,7 +396,7 @@ function VendaItemRow({
 }: VendaItemRowProps) {
     return (
         <div className="grid grid-cols-12 gap-3 rounded-lg border border-border/70 p-3">
-            <div className="col-span-12 sm:col-span-4">
+            <div className="col-span-12 sm:col-span-3">
                 <Label className="text-xs">Item</Label>
                 <Select
                     value={item.item_id ? String(item.item_id) : ''}
@@ -414,7 +418,21 @@ function VendaItemRow({
                 </Select>
             </div>
 
-            <div className="col-span-12 sm:col-span-3">
+            <div className="col-span-12 sm:col-span-2">
+                <Label className="text-xs">Descrição</Label>
+                <Input
+                    value={item.description}
+                    placeholder="Descrição da venda"
+                    onChange={handleInputChange.bind(
+                        null,
+                        onChange,
+                        item.uid,
+                        'description',
+                    )}
+                />
+            </div>
+
+            <div className="col-span-12 sm:col-span-2">
                 <Label className="text-xs">Quantidade</Label>
                 <Input
                     type="number"
@@ -429,7 +447,7 @@ function VendaItemRow({
                 />
             </div>
 
-            <div className="col-span-12 sm:col-span-4">
+            <div className="col-span-12 sm:col-span-3">
                 <Label className="text-xs">Valor unitário</Label>
                 <Input
                     type="number"

@@ -106,6 +106,7 @@ class VendaController extends Controller
                 'item' => ['id' => $item->id, 'name' => $item->name],
                 'quantity' => $item->pivot->quantity,
                 'unit_price' => $item->pivot->unit_price,
+                'description' => $item->pivot->description,
             ];
         }
 
@@ -152,16 +153,15 @@ class VendaController extends Controller
      */
     private function syncItens(Venda $venda, array $itens): void
     {
-        $pivotData = [];
+        $venda->itens()->detach();
 
         foreach ($itens as $item) {
-            $pivotData[$item['item_id']] = [
+            $venda->itens()->attach($item['item_id'], [
                 'quantity' => (int) $item['quantity'],
                 'unit_price' => (float) $item['unit_price'],
-            ];
+                'description' => $item['description'] ?? null,
+            ]);
         }
-
-        $venda->itens()->sync($pivotData);
     }
 
     private function redirectWithToast(string $message): RedirectResponse

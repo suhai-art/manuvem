@@ -84,7 +84,6 @@ export function ItemsTable({ items }: { items: ItemsPayload }) {
                         <Link
                             type="button"
                             href={create()}
-                            onClick={() => console.log('clicado')}
                             className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
                         >
                             Novo item
