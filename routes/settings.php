@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Settings\CompanyLogoController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use Illuminate\Auth\Middleware\RequirePassword;
@@ -10,6 +11,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('settings/company', [CompanyLogoController::class, 'edit'])->name('company.edit');
+    Route::post('settings/company/logo', [CompanyLogoController::class, 'update'])->name('company.logo.update');
+    Route::delete('settings/company/logo', [CompanyLogoController::class, 'destroy'])->name('company.logo.destroy');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
