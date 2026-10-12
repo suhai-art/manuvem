@@ -13,6 +13,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::get('settings/company', [CompanyLogoController::class, 'edit'])->name('company.edit');
+    Route::get('settings/company/logo/image', [CompanyLogoController::class, 'image'])->name('company.logo.image');
     Route::post('settings/company/logo', [CompanyLogoController::class, 'update'])->name('company.logo.update');
     Route::delete('settings/company/logo', [CompanyLogoController::class, 'destroy'])->name('company.logo.destroy');
 });

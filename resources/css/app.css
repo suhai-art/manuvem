@@ -152,6 +152,114 @@
     }
 }
 
+@media print {
+    @page {
+        size: A4;
+        margin: 0;
+    }
+
+    body:has(.venda-print-root) *:has(.venda-print-root) > *:not(:has(.venda-print-root)):not(.venda-print-root) {
+        display: none !important;
+    }
+
+    body:has(.venda-print-root) * {
+        visibility: hidden !important;
+    }
+
+    body:has(.venda-print-root) .venda-print-root,
+    body:has(.venda-print-root) .venda-print-root * {
+        visibility: visible !important;
+    }
+
+    .venda-print-root {
+        position: static;
+        width: 100%;
+        min-height: 0 !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        box-sizing: border-box;
+        background: white !important;
+        color: #111 !important;
+    }
+
+    .venda-print-root .print-hide {
+        display: none !important;
+    }
+
+    .venda-print-root .venda-print-documents {
+        display: block !important;
+    }
+
+    .venda-print-root .venda-document-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin: 0 0 8mm;
+        padding-bottom: 5mm;
+        border-bottom: 1px solid #000;
+        break-inside: avoid;
+    }
+
+    .venda-print-root .venda-document-header img {
+        display: block;
+        max-height: 52px;
+        max-width: 170px;
+        object-fit: contain;
+        object-position: left;
+    }
+
+    .venda-print-root .venda-document-sheet {
+        position: relative;
+        display: block !important;
+        min-height: 260mm;
+        padding: 14mm 14mm 18mm;
+        box-sizing: border-box;
+        page-break-after: always;
+        break-after: page;
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    .venda-print-root .venda-document-footer {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 8mm;
+        text-align: center;
+    }
+
+    .venda-print-root .venda-document-sheet:last-child {
+        page-break-after: auto;
+        break-after: auto;
+    }
+
+    .venda-print-root .overflow-x-auto {
+        overflow: visible !important;
+    }
+
+    .venda-print-root table {
+        min-width: 0 !important;
+    }
+
+    .venda-print-root [class*='shadow'] {
+        box-shadow: none !important;
+    }
+
+    .venda-print-root tr {
+        break-inside: avoid;
+    }
+
+    .venda-print-root .venda-document-sheet {
+        break-inside: auto;
+    }
+}
+
+.venda-print-documents,
+.venda-document-sheet {
+    display: none;
+}
+
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Inter Variable', sans-serif;

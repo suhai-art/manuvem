@@ -11,6 +11,7 @@ use App\Models\Item;
 use App\Models\Venda;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Validation\Rule;
@@ -43,10 +44,13 @@ class VendaController extends Controller
         return $this->redirectWithToast(__('Venda criada com sucesso.'));
     }
 
-    public function show(Venda $venda): Response
+    public function show(Request $request, Venda $venda): Response
     {
+        $logoPath = $request->user()->company_logo_path;
+
         return Inertia::render('vendas/show', [
-            'venda' => $venda->load('itens'),
+            'venda' => $venda->load('cliente', 'itens'),
+            'companyLogoUrl' => $logoPath ? route('company.logo.image', absolute: false) : null,
             $this->formOptions(),
         ]);
     }
