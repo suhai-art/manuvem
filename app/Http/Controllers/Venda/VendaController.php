@@ -44,6 +44,7 @@ class VendaController extends Controller
     {
         return Inertia::render('vendas/show', [
             'venda' => $venda->load('itens'),
+            $this->formOptions(),
         ]);
     }
 

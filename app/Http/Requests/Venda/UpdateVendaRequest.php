@@ -17,10 +17,10 @@ class UpdateVendaRequest extends FormRequest
             'cliente_id' => ['required', 'integer', 'exists:clientes,id'],
             'status' => ['required', 'string', 'in:pending,confirmed,completed,cancelled'],
             'is_priority' => ['boolean'],
-            'items' => ['required', 'array'],
-            'items.*.item_id' => ['required', 'integer', 'exists:items,id'],
-            'items.*.quantity' => ['required', 'integer', 'min:1'],
-            'items.*.unit_price' => ['required', 'numeric', 'min:0'],
+            'itens' => ['required', 'array'],
+            'itens.*.item_id' => ['required', 'integer', 'exists:items,id'],
+            'itens.*.quantity' => ['required', 'integer', 'min:1'],
+            'itens.*.unit_price' => ['required', 'numeric', 'min:0'],
         ];
     }
 }

@@ -17,7 +17,7 @@ import {
     ArrowUp,
     ArrowDown,
 } from 'lucide-react';
-import { create, destroy, edit, index, store, update } from '@/routes/vendas';
+import { create, destroy, show, edit, index, store, update } from '@/routes/vendas';
 import { Venda, VendaItem, VendasPayload } from '@/models/Venda';
 
 type VendasTableProps = {

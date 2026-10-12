@@ -58,8 +58,8 @@ type ClienteDraft = { name: string; documento: string };
 
 type VendaFormProps = {
     mode: 'create' | 'edit';
-    clientes: Cliente[];
-    items: Item[];
+    clientes?: Cliente[];
+    items?: Item[];
     venda?: Venda;
 };
 
@@ -107,7 +107,7 @@ const createEmptyItem = (): VendaItemDraft => ({
 
 const toItemDraft = (vendaItem: VendaItem): VendaItemDraft => ({
     uid: crypto.randomUUID(),
-    item_id: vendaItem.item.id,
+    item_id: vendaItem.item?.id ?? vendaItem.item_id ?? null,
     quantity: String(vendaItem.quantity),
     unit_price: String(vendaItem.unit_price),
 });
@@ -461,7 +461,12 @@ function VendaItemRow({
     );
 }
 
-function VendaForm({ mode, clientes, items, venda }: VendaFormProps) {
+function VendaForm({
+    mode,
+    clientes = [],
+    items = [],
+    venda,
+}: VendaFormProps) {
     const isEdit = mode === 'edit';
     const form = useForm<VendaDraft>(buildInitialDraft(venda));
     const total = calculateTotal(form.data.itens);

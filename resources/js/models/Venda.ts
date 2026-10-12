@@ -4,15 +4,17 @@ export type Venda = {
     status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
     is_priority: boolean;
     total: number;
+    itens?: VendaItem[];
     created_at: string;
     updated_at: string;
 };
 
 export type VendaItem = {
-    item: Item;
+    item?: Item;
+    item_id?: number;
     quantity: number;
     unit_price: number;
-    subtotal: number;
+    subtotal?: number;
 };
 
 export type Item = {
