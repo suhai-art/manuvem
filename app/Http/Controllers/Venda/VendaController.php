@@ -29,6 +29,65 @@ class VendaController extends Controller
         ]);
     }
 
+    public function reports(Request $request): Response
+    {
+        $filters = $request->validate([
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'cliente_id' => ['nullable', 'integer', 'exists:clientes,id'],
+        ]);
+
+        $query = Venda::with('cliente');
+
+        if (! empty($filters['cliente_id'])) {
+            $query->where('cliente_id', $filters['cliente_id']);
+        }
+
+        if (! empty($filters['start_date']) || ! empty($filters['end_date'])) {
+            $query->where(function ($query) use ($filters) {
+                $query->where(function ($query) use ($filters) {
+                    $query->where('has_custom_date', true);
+
+                    if (! empty($filters['start_date'])) {
+                        $query->whereDate('sale_date', '>=', $filters['start_date']);
+                    }
+
+                    if (! empty($filters['end_date'])) {
+                        $query->whereDate('sale_date', '<=', $filters['end_date']);
+                    }
+                })->orWhere(function ($query) use ($filters) {
+                    $query->where('has_custom_date', false);
+
+                    if (! empty($filters['start_date'])) {
+                        $query->whereDate('created_at', '>=', $filters['start_date']);
+                    }
+
+                    if (! empty($filters['end_date'])) {
+                        $query->whereDate('created_at', '<=', $filters['end_date']);
+                    }
+                });
+            });
+        }
+
+        $vendas = $query
+            ->orderByRaw('CASE WHEN has_custom_date THEN sale_date ELSE created_at END DESC')
+            ->paginate(20)
+            ->withQueryString();
+
+        return Inertia::render('relatorios/index', [
+            'vendas' => $vendas,
+            'clientes' => Cliente::query()
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get(),
+            'filters' => [
+                'start_date' => $filters['start_date'] ?? '',
+                'end_date' => $filters['end_date'] ?? '',
+                'cliente_id' => $filters['cliente_id'] ?? '',
+            ],
+        ]);
+    }
+
     public function create(): Response
     {
         return Inertia::render('vendas/create', $this->formOptions());
@@ -46,7 +105,7 @@ class VendaController extends Controller
 
     public function show(Request $request, Venda $venda): Response
     {
-        $logoPath = $request->user()->company_logo_path;
+        $logoPath = $request->user()->tenant->company_logo_path;
 
         return Inertia::render('vendas/show', [
             'venda' => $venda->load('cliente', 'itens'),
@@ -117,12 +176,11 @@ class VendaController extends Controller
             'clientes' => Cliente::select('id', 'name', 'documento')
                 ->orderBy('name')
                 ->get(),
-            'items' => Item::select('id', 'name', 'default_unit_price')
+            'items' => Item::select('id', 'internal_code', 'name', 'default_unit_price')
                 ->orderBy('name')
                 ->get(),
         ];
     }
-
     /**
      * Converte a venda para o formato esperado pelo VendaForm:
      * itens: [{ item: {id, name}, quantity, unit_price }]

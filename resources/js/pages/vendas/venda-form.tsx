@@ -441,7 +441,7 @@ function VendaItemRow({
                                 key={option.id}
                                 value={String(option.id)}
                             >
-                                {option.name}
+                                {option.internal_code} - {option.name}
                             </SelectItem>
                         ))}
                     </SelectContent>

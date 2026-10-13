@@ -13,7 +13,7 @@ class CompanyLogoController extends Controller
 {
     public function edit(Request $request): Response
     {
-        $logoPath = $request->user()->company_logo_path;
+        $logoPath = $request->user()->tenant->company_logo_path;
 
         return Inertia::render('settings/company', [
             'logoUrl' => $logoPath ? route('company.logo.image', absolute: false) : null,
@@ -23,7 +23,7 @@ class CompanyLogoController extends Controller
     public function image(Request $request): \Illuminate\Http\Response
     {
         $disk = Storage::disk('public');
-        $logoPath = $request->user()->company_logo_path;
+        $logoPath = $request->user()->tenant->company_logo_path;
 
         abort_unless($logoPath && $disk->exists($logoPath), 404);
 
@@ -47,9 +47,10 @@ class CompanyLogoController extends Controller
         ]);
 
         $user = $request->user();
-        $oldLogoPath = $user->company_logo_path;
-        $user->company_logo_path = $validated['logo']->store('company-logos/'.$user->getKey(), 'public');
-        $user->save();
+        $tenant = $user->tenant;
+        $oldLogoPath = $tenant->company_logo_path;
+        $tenant->company_logo_path = $validated['logo']->store('company-logos/'.$tenant->getKey(), 'public');
+        $tenant->save();
 
         if ($oldLogoPath) {
             Storage::disk('public')->delete($oldLogoPath);
@@ -64,10 +65,12 @@ class CompanyLogoController extends Controller
     {
         $user = $request->user();
 
-        if ($user->company_logo_path) {
-            Storage::disk('public')->delete($user->company_logo_path);
-            $user->company_logo_path = null;
-            $user->save();
+        $tenant = $user->tenant;
+
+        if ($tenant->company_logo_path) {
+            Storage::disk('public')->delete($tenant->company_logo_path);
+            $tenant->company_logo_path = null;
+            $tenant->save();
         }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Logomarca removida.']);

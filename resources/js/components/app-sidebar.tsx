@@ -8,6 +8,7 @@ import {
     Users,
     Landmark,
     Coins,
+    FileText,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
@@ -46,10 +47,18 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
+];
+
+const salesItems: NavItem[] = [
     {
         title: 'Vendas',
         href: vendasIndex(),
-        icon: Coins,
+        permissions: ['vendas.view'],
+    },
+    {
+        title: 'Relatórios',
+        href: '/relatorios',
+        icon: FileText,
         permissions: ['vendas.view'],
     },
     {
@@ -87,6 +96,14 @@ export function AppSidebar() {
     const { isAdmin, hasPermission } = useRole();
     const { isCurrentUrl } = useCurrentUrl();
     const isAdminRoute = adminItems.some((item) => isCurrentUrl(item.href));
+    const visibleSalesItems = salesItems.filter(
+        (item) =>
+            !item.permissions?.length ||
+            item.permissions.some((permission) => hasPermission(permission)),
+    );
+    const isSalesRoute = visibleSalesItems.some((item) =>
+        isCurrentUrl(item.href),
+    );
 
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -114,6 +131,52 @@ export function AppSidebar() {
                             ),
                     )}
                 />
+                {visibleSalesItems.length > 0 && (
+                    <SidebarMenu className="px-2">
+                        <Collapsible
+                            asChild
+                            defaultOpen={isSalesRoute}
+                            className="group/collapsible"
+                        >
+                            <SidebarMenuItem>
+                                <CollapsibleTrigger asChild>
+                                    <SidebarMenuButton
+                                        className="text-l my-1 py-5"
+                                        tooltip="Vendas"
+                                        isActive={isSalesRoute}
+                                    >
+                                        <Coins />
+                                        <span>Vendas</span>
+                                        <ChevronRight className="ml-auto rotate-90 transition-transform duration-200 group-data-[state=closed]/collapsible:rotate-0" />
+                                    </SidebarMenuButton>
+                                </CollapsibleTrigger>
+
+                                <CollapsibleContent>
+                                    <SidebarMenuSub>
+                                        {visibleSalesItems.map((item) => (
+                                            <SidebarMenuSubItem key={item.title}>
+                                                <SidebarMenuSubButton
+                                                    asChild
+                                                    className="text-l py-5"
+                                                    isActive={isCurrentUrl(
+                                                        item.href,
+                                                    )}
+                                                >
+                                                    <Link href={item.href}>
+                                                        {item.icon && (
+                                                            <item.icon />
+                                                        )}
+                                                        <span>{item.title}</span>
+                                                    </Link>
+                                                </SidebarMenuSubButton>
+                                            </SidebarMenuSubItem>
+                                        ))}
+                                    </SidebarMenuSub>
+                                </CollapsibleContent>
+                            </SidebarMenuItem>
+                        </Collapsible>
+                    </SidebarMenu>
+                )}
             </SidebarContent>
 
             <SidebarFooter>
