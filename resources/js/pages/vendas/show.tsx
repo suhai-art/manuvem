@@ -63,6 +63,19 @@ const formatDate = (value?: string) => {
           }).format(date);
 };
 
+const formatSaleDate = (
+    venda: Pick<Venda, 'has_custom_date' | 'sale_date' | 'created_at'>,
+) => {
+    if (!venda.has_custom_date || !venda.sale_date) {
+        return formatDate(venda.created_at);
+    }
+
+    const [year, month, day] = venda.sale_date.split('-').map(Number);
+    return new Intl.DateTimeFormat('pt-BR', {
+        dateStyle: 'medium',
+    }).format(new Date(year, month - 1, day));
+};
+
 export default function VendasShow({ venda, companyLogoUrl }: VendasShowProps) {
     const itens = venda.itens ?? [];
     const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -215,7 +228,15 @@ export default function VendasShow({ venda, companyLogoUrl }: VendasShowProps) {
                         </div>
                     </div>
 
-                    <section className="grid gap-4 sm:grid-cols-3" aria-label="Resumo da venda">
+                    <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Resumo da venda">
+                        <div className="rounded-xl border border-border/70 bg-card p-5 shadow-sm">
+                            <div className="mb-3 text-sm text-muted-foreground">Nome da venda</div>
+                            <p className="font-semibold">{venda.name || '—'}</p>
+                        </div>
+                        <div className="rounded-xl border border-border/70 bg-card p-5 shadow-sm">
+                            <div className="mb-3 text-sm text-muted-foreground">ID externo</div>
+                            <p className="font-semibold">{venda.external_id || '—'}</p>
+                        </div>
                         <div className="rounded-xl border border-border/70 bg-card p-5 shadow-sm">
                             <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
                                 <UserRound className="size-4" aria-hidden="true" /> Cliente
@@ -225,9 +246,9 @@ export default function VendasShow({ venda, companyLogoUrl }: VendasShowProps) {
                         </div>
                         <div className="rounded-xl border border-border/70 bg-card p-5 shadow-sm">
                             <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
-                                <CalendarDays className="size-4" aria-hidden="true" /> Registrada em
+                                <CalendarDays className="size-4" aria-hidden="true" /> {venda.has_custom_date ? 'Data da venda' : 'Registrada em'}
                             </div>
-                            <p className="font-semibold">{formatDate(venda.created_at)}</p>
+                            <p className="font-semibold">{formatSaleDate(venda)}</p>
                         </div>
                         <div className="rounded-xl border border-border/70 bg-card p-5 shadow-sm">
                             <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
@@ -366,8 +387,10 @@ export default function VendasShow({ venda, companyLogoUrl }: VendasShowProps) {
                             {renderDocumentHeader('Recibo')}
 
                             <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
+                                {venda.name && <div><span className="font-semibold">Venda:</span> {venda.name}</div>}
+                                {venda.external_id && <div><span className="font-semibold">ID externo:</span> {venda.external_id}</div>}
                                 <div><span className="font-semibold">Cliente:</span> {venda.cliente?.name ?? 'Não informado'}</div>
-                                <div><span className="font-semibold">Data:</span> {formatDate(venda.created_at)}</div>
+                                <div><span className="font-semibold">Data:</span> {formatSaleDate(venda)}</div>
                                 {venda.cliente?.documento && (
                                     <div><span className="font-semibold">Documento:</span> {venda.cliente.documento}</div>
                                 )}
@@ -416,9 +439,11 @@ export default function VendasShow({ venda, companyLogoUrl }: VendasShowProps) {
                             {renderDocumentHeader('Ordem de produção')}
 
                             <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
+                                {venda.name && <div><span className="font-semibold">Venda:</span> {venda.name}</div>}
+                                {venda.external_id && <div><span className="font-semibold">ID externo:</span> {venda.external_id}</div>}
                                 <div><span className="font-semibold">Cliente:</span> {venda.cliente?.name ?? 'Não informado'}</div>
                                 <div><span className="font-semibold">Documento:</span> {venda.cliente?.documento ?? 'Não informado'}</div>
-                                <div><span className="font-semibold">Data:</span> {formatDate(venda.created_at)}</div>
+                                <div><span className="font-semibold">Data:</span> {formatSaleDate(venda)}</div>
                                 <div><span className="font-semibold">Status:</span> {statusLabels[venda.status]}</div>
                                 <div><span className="font-semibold">Prioridade:</span> {venda.is_priority ? 'Sim' : 'Não'}</div>
                             </div>

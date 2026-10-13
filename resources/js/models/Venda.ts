@@ -1,5 +1,9 @@
 export type Venda = {
     id: number;
+    name: string | null;
+    external_id: string | null;
+    sale_date: string | null;
+    has_custom_date: boolean;
     cliente: ClientesPayload['data'][0] | null;
     status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
     is_priority: boolean;

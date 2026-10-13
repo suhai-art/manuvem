@@ -49,6 +49,10 @@ type VendaItemDraft = {
 };
 
 type VendaDraft = {
+    name: string;
+    external_id: string;
+    sale_date: string;
+    has_custom_date: boolean;
     cliente_id: number | null;
     status: VendaStatus;
     is_priority: boolean;
@@ -116,6 +120,10 @@ const toItemDraft = (vendaItem: VendaItem): VendaItemDraft => ({
 });
 
 const buildInitialDraft = (venda?: Venda): VendaDraft => ({
+    name: venda?.name ?? '',
+    external_id: venda?.external_id ?? '',
+    sale_date: venda?.sale_date ?? '',
+    has_custom_date: venda?.has_custom_date ?? false,
     cliente_id: venda?.cliente?.id ?? null,
     status: venda?.status ?? 'pending',
     is_priority: venda?.is_priority ?? false,
@@ -152,6 +160,10 @@ const updateItem = (
 });
 
 const toVendaPayload = (draft: VendaDraft) => ({
+    name: draft.name.trim() || null,
+    external_id: draft.external_id.trim() || null,
+    sale_date: draft.has_custom_date ? draft.sale_date : null,
+    has_custom_date: draft.has_custom_date,
     cliente_id: draft.cliente_id,
     status: draft.status,
     is_priority: draft.is_priority,
@@ -513,6 +525,78 @@ function VendaForm({
             className="flex flex-col gap-6 p-4 sm:p-8"
         >
             <VendaFormHeader isEdit={isEdit} />
+
+            <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-2">
+                    <Label htmlFor="venda_nome">Nome da venda</Label>
+                    <Input
+                        id="venda_nome"
+                        value={form.data.name}
+                        onChange={(event) =>
+                            form.setData('name', event.target.value)
+                        }
+                        placeholder="Nome da venda"
+                    />
+                    {form.errors.name && (
+                        <p className="text-sm text-destructive">
+                            {form.errors.name}
+                        </p>
+                    )}
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="venda_id_externo">ID externo</Label>
+                    <Input
+                        id="venda_id_externo"
+                        value={form.data.external_id}
+                        onChange={(event) =>
+                            form.setData('external_id', event.target.value)
+                        }
+                        placeholder="Identificador no sistema externo"
+                    />
+                    {form.errors.external_id && (
+                        <p className="text-sm text-destructive">
+                            {form.errors.external_id}
+                        </p>
+                    )}
+                </div>
+            </div>
+
+            <div className="grid gap-3 rounded-lg border border-border/70 p-4">
+                <label className="flex items-center gap-2 text-sm font-medium">
+                    <input
+                        type="checkbox"
+                        checked={form.data.has_custom_date}
+                        onChange={(event) => {
+                            const checked = event.target.checked;
+                            form.setData((data) => ({
+                                ...data,
+                                has_custom_date: checked,
+                                sale_date: checked ? data.sale_date : '',
+                            }));
+                        }}
+                        className="size-4 rounded border-border bg-background"
+                    />
+                    Informar data manualmente
+                </label>
+                {form.data.has_custom_date && (
+                    <div className="grid max-w-sm gap-2">
+                        <Label htmlFor="venda_data">Data da venda</Label>
+                        <Input
+                            id="venda_data"
+                            type="date"
+                            value={form.data.sale_date}
+                            onChange={(event) =>
+                                form.setData('sale_date', event.target.value)
+                            }
+                        />
+                        {form.errors.sale_date && (
+                            <p className="text-sm text-destructive">
+                                {form.errors.sale_date}
+                            </p>
+                        )}
+                    </div>
+                )}
+            </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
                 <div className="grid gap-2">

@@ -13,6 +13,10 @@ use Illuminate\Support\Carbon;
 
 /** @property int $id
  * @property int $cliente_id
+ * @property string|null $name
+ * @property string|null $external_id
+ * @property Carbon|null $sale_date
+ * @property bool $has_custom_date
  * @property string $status
  * @property bool $is_priority
  * @property float $total
@@ -31,6 +35,10 @@ class Venda extends Model
 
     protected $fillable = [
         'cliente_id',
+        'name',
+        'external_id',
+        'sale_date',
+        'has_custom_date',
         'status',
         'is_priority',
         'total',
@@ -40,6 +48,8 @@ class Venda extends Model
     {
         return [
             'cliente_id' => 'integer',
+            'sale_date' => 'date:Y-m-d',
+            'has_custom_date' => 'boolean',
             'status' => VendaStatus::class,
             'is_priority' => 'boolean',
             'total' => 'decimal:2',

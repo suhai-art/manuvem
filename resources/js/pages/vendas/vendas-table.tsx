@@ -62,6 +62,19 @@ const formatDate = (value: string) =>
         year: 'numeric',
     }).format(new Date(value));
 
+const formatSaleDate = (venda: Venda) => {
+    if (!venda.has_custom_date || !venda.sale_date) {
+        return formatDate(venda.created_at);
+    }
+
+    const [year, month, day] = venda.sale_date.split('-').map(Number);
+    return new Intl.DateTimeFormat('pt-BR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    }).format(new Date(year, month - 1, day));
+};
+
 export default function VendasTable({ vendas }: VendasTableProps) {
     const [search, setSearch] = useState('');
     const [sortAscending, setSortAscending] = useState(false);
@@ -76,6 +89,9 @@ export default function VendasTable({ vendas }: VendasTableProps) {
                       `${v.id} ${cliente?.name ?? ''}`
                           .toLowerCase()
                           .includes(query) ||
+                      `${v.name ?? ''} ${v.external_id ?? ''}`
+                          .toLowerCase()
+                          .includes(query) ||
                       `${v.total} ${statusLabels[v.status]}`
                           .toLowerCase()
                           .includes(query)
@@ -84,9 +100,11 @@ export default function VendasTable({ vendas }: VendasTableProps) {
             : vendas.data;
 
         return [...result].sort((a, b) => {
-            const diff =
-                new Date(a.created_at).getTime() -
-                new Date(b.created_at).getTime();
+            const dateForSort = (venda: Venda) =>
+                venda.has_custom_date && venda.sale_date
+                    ? new Date(`${venda.sale_date}T00:00:00`).getTime()
+                    : new Date(venda.created_at).getTime();
+            const diff = dateForSort(a) - dateForSort(b);
             return sortAscending ? diff : -diff;
         });
     }, [search, sortAscending, vendas.data]);
@@ -171,7 +189,7 @@ export default function VendasTable({ vendas }: VendasTableProps) {
             </div>
 
             <div className="overflow-x-auto">
-                <table className="w-full min-w-[860px] text-left text-sm">
+                <table className="w-full min-w-[960px] text-left text-sm">
                     <caption className="sr-only">
                         Lista de vendas cadastradas
                     </caption>
@@ -179,6 +197,9 @@ export default function VendasTable({ vendas }: VendasTableProps) {
                         <tr>
                             <th scope="col" className="px-5 py-3 font-medium">
                                 Cliente
+                            </th>
+                            <th scope="col" className="px-5 py-3 font-medium">
+                                Nome da venda
                             </th>
                             <th scope="col" className="px-5 py-3 font-medium">
                                 Status
@@ -226,6 +247,9 @@ export default function VendasTable({ vendas }: VendasTableProps) {
                                 <td className="px-5 py-4 font-medium text-foreground">
                                     {venda.cliente?.name ?? '—'}
                                 </td>
+                                <td className="px-5 py-4 font-medium text-foreground">
+                                    {venda.name || '—'}
+                                </td>
                                 <td className="px-5 py-4">
                                     <span
                                         className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${statusClasses[venda.status]}`}
@@ -252,7 +276,7 @@ export default function VendasTable({ vendas }: VendasTableProps) {
                                     {formatTotal(venda.total)}
                                 </td>
                                 <td className="px-5 py-4 text-muted-foreground">
-                                    {formatDate(venda.created_at)}
+                                    {formatSaleDate(venda)}
                                 </td>
                                 <td className="px-5 py-4">
                                     <div className="flex justify-end">

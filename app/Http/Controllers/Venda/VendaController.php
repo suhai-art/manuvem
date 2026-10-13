@@ -145,6 +145,10 @@ class VendaController extends Controller
 
         return [
             'id' => $venda->id,
+            'name' => $venda->name,
+            'external_id' => $venda->external_id,
+            'sale_date' => $venda->sale_date?->format('Y-m-d'),
+            'has_custom_date' => $venda->has_custom_date,
             'cliente' => $venda->cliente,
             'status' => $venda->status,
             'is_priority' => $venda->is_priority,
@@ -159,8 +163,14 @@ class VendaController extends Controller
      */
     private function vendaAttributes(array $data): array
     {
+        $hasCustomDate = (bool) ($data['has_custom_date'] ?? false);
+
         return [
             'cliente_id' => $data['cliente_id'],
+            'name' => $data['name'] ?? null,
+            'external_id' => $data['external_id'] ?? null,
+            'sale_date' => $hasCustomDate ? $data['sale_date'] : null,
+            'has_custom_date' => $hasCustomDate,
             'status' => $data['status'],
             'is_priority' => (bool) $data['is_priority'],
             'total' => $this->calcularTotal($data['itens'] ?? []),
