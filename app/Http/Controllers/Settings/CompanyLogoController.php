@@ -16,7 +16,9 @@ class CompanyLogoController extends Controller
         $logoPath = $request->user()->tenant->company_logo_path;
 
         return Inertia::render('settings/company', [
-            'logoUrl' => $logoPath ? route('company.logo.image', absolute: false) : null,
+            'logoUrl' => $logoPath
+                ? route('company.logo.image', ['v' => hash('sha256', $logoPath)], absolute: false)
+                : null,
         ]);
     }
 
@@ -36,7 +38,7 @@ class CompanyLogoController extends Controller
 
         return response($disk->get($logoPath), 200, [
             'Content-Type' => $mimeType,
-            'Cache-Control' => 'private, max-age=3600',
+            'Cache-Control' => 'private, no-store',
         ]);
     }
 

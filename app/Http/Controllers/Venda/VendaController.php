@@ -70,7 +70,9 @@ class VendaController extends Controller
 
         return Inertia::render('relatorios/pdf', [
             'vendas' => $this->reportsQuery($filters)->with('itens')->get(),
-            'companyLogoUrl' => $logoPath ? route('company.logo.image', absolute: false) : null,
+            'companyLogoUrl' => $logoPath
+                ? route('company.logo.image', ['v' => hash('sha256', $logoPath)], absolute: false)
+                : null,
             'filters' => [
                 'start_date' => $filters['start_date'] ?? '',
                 'end_date' => $filters['end_date'] ?? '',
@@ -146,7 +148,9 @@ class VendaController extends Controller
 
         return Inertia::render('vendas/show', [
             'venda' => $venda->load('cliente', 'itens'),
-            'companyLogoUrl' => $logoPath ? route('company.logo.image', absolute: false) : null,
+            'companyLogoUrl' => $logoPath
+                ? route('company.logo.image', ['v' => hash('sha256', $logoPath)], absolute: false)
+                : null,
             $this->formOptions(),
         ]);
     }
