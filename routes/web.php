@@ -14,6 +14,10 @@ Route::redirect('/', '/login')->name('home');
 Route::middleware('auth')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('relatorios/pdf', [VendaController::class, 'reportsPdf'])
+        ->name('relatorios.pdf')
+        ->middleware('can:viewAny,'.Venda::class);
+
     Route::get('relatorios', [VendaController::class, 'reports'])
         ->name('relatorios.index')
         ->middleware('can:viewAny,'.Venda::class);

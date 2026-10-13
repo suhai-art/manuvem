@@ -1,6 +1,6 @@
 import { Head, router } from '@inertiajs/react';
 import { useRef, useState, type FormEvent } from 'react';
-import { CalendarDays, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight, FileText, Printer } from 'lucide-react';
 
 type RelatorioVenda = {
     id: number;
@@ -26,7 +26,12 @@ type RelatorioPayload = {
 type RelatoriosProps = {
     vendas: RelatorioPayload;
     clientes: { id: number; name: string }[];
-    filters: { start_date: string; end_date: string; cliente_id: string | number };
+    filters: {
+        start_date: string;
+        end_date: string;
+        cliente_id: string | number;
+        status: RelatorioVenda['status'] | '';
+    };
 };
 
 const statusLabels: Record<RelatorioVenda['status'], string> = {
@@ -101,6 +106,7 @@ export default function RelatoriosIndex({
     const startDateInputRef = useRef<HTMLInputElement>(null);
     const endDateInputRef = useRef<HTMLInputElement>(null);
     const [clienteId, setClienteId] = useState(String(filters.cliente_id));
+    const [status, setStatus] = useState(filters.status);
 
     function visitPage(page: number) {
         router.get(
@@ -109,6 +115,7 @@ export default function RelatoriosIndex({
                 start_date: startDate || undefined,
                 end_date: endDate || undefined,
                 cliente_id: clienteId || undefined,
+                status: status || undefined,
                 page,
             },
             { preserveScroll: true, preserveState: true, replace: true },
@@ -126,7 +133,34 @@ export default function RelatoriosIndex({
         setStartDateInput('');
         setEndDateInput('');
         setClienteId('');
+        setStatus('');
         router.get('/relatorios', {}, { preserveScroll: true });
+    }
+
+    function exportPdf() {
+        const query = new URLSearchParams();
+
+        if (filters.start_date) query.set('start_date', filters.start_date);
+        if (filters.end_date) query.set('end_date', filters.end_date);
+        if (filters.cliente_id) query.set('cliente_id', String(filters.cliente_id));
+        if (filters.status) query.set('status', filters.status);
+
+        const iframe = document.createElement('iframe');
+        iframe.title = 'Impressão do relatório';
+        iframe.style.position = 'fixed';
+        iframe.style.left = '-10000px';
+        iframe.style.width = '1000px';
+        iframe.style.height = '750px';
+        iframe.style.border = '0';
+        iframe.onload = () => {
+            iframe.contentWindow?.addEventListener(
+                'afterprint',
+                () => iframe.remove(),
+                { once: true },
+            );
+        };
+        iframe.src = `/relatorios/pdf?${query.toString()}`;
+        document.body.append(iframe);
     }
 
     return (
@@ -135,14 +169,24 @@ export default function RelatoriosIndex({
             <main className="min-h-screen bg-muted/20 p-4 sm:p-8">
                 <div className="mx-auto w-full max-w-6xl">
                     <section className="overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
-                        <header className="flex items-center gap-3 border-b border-border/70 p-5">
-                            <FileText className="size-5 text-primary" aria-hidden="true" />
-                            <div>
-                                <h1 className="text-lg font-semibold">Relatórios</h1>
-                                <p className="text-sm text-muted-foreground">
-                                    Consulte as vendas por período e cliente.
-                                </p>
+                        <header className="flex items-center justify-between gap-3 border-b border-border/70 p-5">
+                            <div className="flex items-center gap-3">
+                                <FileText className="size-5 text-primary" aria-hidden="true" />
+                                <div>
+                                    <h1 className="text-lg font-semibold">Relatórios</h1>
+                                    <p className="text-sm text-muted-foreground">
+                                        Consulte as vendas por período e cliente.
+                                    </p>
+                                </div>
                             </div>
+                            <button
+                                type="button"
+                                onClick={exportPdf}
+                                className="inline-flex h-10 shrink-0 items-center gap-2 rounded-md border border-input px-3 text-sm font-medium transition hover:bg-muted"
+                            >
+                                <Printer className="size-4" aria-hidden="true" />
+                                Exportar PDF
+                            </button>
                         </header>
 
                         <form
@@ -241,6 +285,19 @@ export default function RelatoriosIndex({
                                         <option key={cliente.id} value={cliente.id}>
                                             {cliente.name}
                                         </option>
+                                    ))}
+                                </select>
+                            </label>
+                            <label className="grid flex-1 gap-1.5 text-sm font-medium">
+                                Status
+                                <select
+                                    value={status}
+                                    onChange={(event) => setStatus(event.target.value as RelatorioVenda['status'] | '')}
+                                    className="h-10 rounded-md border border-input bg-background px-3 font-normal outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
+                                >
+                                    <option value="">Todos os status</option>
+                                    {Object.entries(statusLabels).map(([value, label]) => (
+                                        <option key={value} value={value}>{label}</option>
                                     ))}
                                 </select>
                             </label>

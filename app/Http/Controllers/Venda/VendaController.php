@@ -9,6 +9,7 @@ use App\Models\Cliente;
 use App\Models\Enums\VendaStatus;
 use App\Models\Item;
 use App\Models\Venda;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -35,12 +36,64 @@ class VendaController extends Controller
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'cliente_id' => ['nullable', 'integer', 'exists:clientes,id'],
+            'status' => ['nullable', Rule::enum(VendaStatus::class)],
         ]);
 
+        $vendas = $this->reportsQuery($filters)
+            ->paginate(20)
+            ->withQueryString();
+
+        return Inertia::render('relatorios/index', [
+            'vendas' => $vendas,
+            'clientes' => Cliente::query()
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get(),
+            'filters' => [
+                'start_date' => $filters['start_date'] ?? '',
+                'end_date' => $filters['end_date'] ?? '',
+                'cliente_id' => $filters['cliente_id'] ?? '',
+                'status' => $filters['status'] ?? '',
+            ],
+        ]);
+    }
+
+    public function reportsPdf(Request $request): Response
+    {
+        $filters = $request->validate([
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'cliente_id' => ['nullable', 'integer', 'exists:clientes,id'],
+            'status' => ['nullable', Rule::enum(VendaStatus::class)],
+        ]);
+        $logoPath = $request->user()->tenant->company_logo_path;
+
+        return Inertia::render('relatorios/pdf', [
+            'vendas' => $this->reportsQuery($filters)->with('itens')->get(),
+            'companyLogoUrl' => $logoPath ? route('company.logo.image', absolute: false) : null,
+            'filters' => [
+                'start_date' => $filters['start_date'] ?? '',
+                'end_date' => $filters['end_date'] ?? '',
+                'cliente_id' => $filters['cliente_id'] ?? '',
+                'status' => $filters['status'] ?? '',
+            ],
+        ]);
+    }
+
+    /**
+    * @param  array{start_date?: string|null, end_date?: string|null, cliente_id?: int|string|null, status?: string|null}  $filters
+     * @return Builder<Venda>
+     */
+    private function reportsQuery(array $filters): Builder
+    {
         $query = Venda::with('cliente');
 
         if (! empty($filters['cliente_id'])) {
             $query->where('cliente_id', $filters['cliente_id']);
+        }
+
+        if (! empty($filters['status'])) {
+            $query->where('status', $filters['status']);
         }
 
         if (! empty($filters['start_date']) || ! empty($filters['end_date'])) {
@@ -69,23 +122,7 @@ class VendaController extends Controller
             });
         }
 
-        $vendas = $query
-            ->orderByRaw('CASE WHEN has_custom_date THEN sale_date ELSE created_at END DESC')
-            ->paginate(20)
-            ->withQueryString();
-
-        return Inertia::render('relatorios/index', [
-            'vendas' => $vendas,
-            'clientes' => Cliente::query()
-                ->select('id', 'name')
-                ->orderBy('name')
-                ->get(),
-            'filters' => [
-                'start_date' => $filters['start_date'] ?? '',
-                'end_date' => $filters['end_date'] ?? '',
-                'cliente_id' => $filters['cliente_id'] ?? '',
-            ],
-        ]);
+        return $query->orderByRaw('CASE WHEN has_custom_date THEN sale_date ELSE created_at END DESC');
     }
 
     public function create(): Response

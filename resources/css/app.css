@@ -190,7 +190,8 @@
         display: block !important;
     }
 
-    .venda-print-root .venda-document-header {
+    .venda-print-root .venda-document-header,
+    .relatorio-print-root .venda-document-header {
         display: flex !important;
         align-items: center;
         justify-content: space-between;
@@ -201,7 +202,8 @@
         break-inside: avoid;
     }
 
-    .venda-print-root .venda-document-header img {
+    .venda-print-root .venda-document-header img,
+    .relatorio-print-root .venda-document-header img {
         display: block;
         max-height: 52px;
         max-width: 170px;
@@ -253,6 +255,60 @@
     .venda-print-root .venda-document-sheet {
         break-inside: auto;
     }
+
+    body:has(.relatorio-print-root) *:has(.relatorio-print-root) > *:not(:has(.relatorio-print-root)):not(.relatorio-print-root) {
+        display: none !important;
+    }
+
+    body:has(.relatorio-print-root) * {
+        visibility: hidden !important;
+    }
+
+    body:has(.relatorio-print-root) .relatorio-print-root,
+    body:has(.relatorio-print-root) .relatorio-print-root * {
+        visibility: visible !important;
+    }
+
+    .relatorio-print-root {
+        position: static;
+        width: 100%;
+        max-width: none !important;
+        padding: 12mm !important;
+        box-sizing: border-box;
+        background: white !important;
+        color: #111 !important;
+        font-size: 10pt;
+    }
+
+    .relatorio-print-root .venda-document-header {
+        margin-bottom: 8mm;
+        padding-bottom: 5mm;
+        break-inside: avoid;
+    }
+
+    .relatorio-print-root table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .relatorio-print-root th,
+    .relatorio-print-root td {
+        border-bottom: 1px solid #bbb;
+        padding: 5px 7px;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .relatorio-print-root th:last-child,
+    .relatorio-print-root td:last-child {
+        text-align: right;
+    }
+
+    .relatorio-print-root .relatorio-print-venda {
+        margin-top: 8mm;
+        break-inside: avoid;
+    }
+
 }
 
 .venda-print-documents,
