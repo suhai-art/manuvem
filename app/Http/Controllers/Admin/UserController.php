@@ -6,52 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\StoreUserRequest;
 use App\Http\Requests\Admin\User\UpdateUserRequest;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    public function __construct(private readonly UserService $userService) {}
+
     /**
      * Display a listing of users.
      */
     public function index(Request $request): Response
     {
-        $query = User::query()
-            ->with('roles')
-            ->orderBy($request->input('sort', 'created_at'), $request->input('direction', 'desc'));
-
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('role')) {
-            $role = $request->input('role');
-            $query->whereHas('roles', fn ($q) => $q->where('name', $role));
-        }
-
-        $perPage = (int) $request->input('per_page', 15);
-        $users = $query->paginate($perPage)->withQueryString();
-
-        $roles = Role::pluck('name')->values();
-
         return Inertia::render('admin/users/index', [
-            'users' => $users,
-            'roles' => $roles,
-            'filters' => [
-                'search' => $request->input('search'),
-                'role' => $request->input('role'),
-                'sort' => $request->input('sort', 'created_at'),
-                'direction' => $request->input('direction', 'desc'),
-                'per_page' => $perPage,
-            ],
+            ...$this->userService->index($request->only(['search', 'role', 'sort', 'direction', 'per_page'])),
         ]);
     }
 
@@ -60,10 +31,8 @@ class UserController extends Controller
      */
     public function create(): Response
     {
-        $roles = Role::pluck('name')->values();
-
         return Inertia::render('admin/users/create', [
-            'roles' => $roles,
+            'roles' => $this->userService->roles(),
         ]);
     }
 
@@ -72,15 +41,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
-        $user = User::create([
-            'name' => $request->validated('name'),
-            'email' => $request->validated('email'),
-            'password' => Hash::make($request->validated('password')),
-        ]);
-
-        if ($request->filled('roles')) {
-            $user->syncRoles($request->validated('roles'));
-        }
+        $this->userService->create($request->validated(), $request->filled('roles'));
 
         return redirect()->route('admin.users.index')
             ->with('toast', [
@@ -95,7 +56,7 @@ class UserController extends Controller
     public function show(User $user): Response
     {
         return Inertia::render('admin/users/show', [
-            'user' => $user->load('roles'),
+            'user' => $this->userService->withRoles($user),
         ]);
     }
 
@@ -104,11 +65,9 @@ class UserController extends Controller
      */
     public function edit(User $user): Response
     {
-        $roles = Role::pluck('name')->values();
-
         return Inertia::render('admin/users/edit', [
-            'user' => $user->load('roles'),
-            'roles' => $roles,
+            'user' => $this->userService->withRoles($user),
+            'roles' => $this->userService->roles(),
         ]);
     }
 
@@ -117,15 +76,12 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $user->update($request->validated());
-
-        if ($request->filled('roles')) {
-            $user->syncRoles($request->validated('roles'));
-        }
-
-        if ($request->filled('permissions')) {
-            $user->syncPermissions($request->validated('permissions'));
-        }
+        $this->userService->update(
+            $user,
+            $request->validated(),
+            $request->filled('roles'),
+            $request->filled('permissions'),
+        );
 
         return redirect()->route('admin.users.index')
             ->with('toast', [
@@ -139,7 +95,7 @@ class UserController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
-        $user->delete();
+        $this->userService->delete($user);
 
         return redirect()->route('admin.users.index')
             ->with('toast', [

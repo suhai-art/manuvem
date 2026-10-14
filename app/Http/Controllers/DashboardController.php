@@ -2,24 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cliente;
-use App\Models\Item;
+use App\Services\DashboardService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
+    public function __construct(private readonly DashboardService $dashboardService) {}
+
     public function index(Request $request): Response
     {
-        $clientesCount = Cliente::count();
-        $itensCount = Item::count();
-
         return Inertia::render('dashboard', [
-            'stats' => [
-                'clientes' => $clientesCount,
-                'itens' => $itensCount,
-            ],
+            'stats' => $this->dashboardService->stats(),
         ]);
     }
 }

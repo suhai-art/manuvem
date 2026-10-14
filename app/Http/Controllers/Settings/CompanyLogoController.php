@@ -3,41 +3,30 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Services\CompanyLogoService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class CompanyLogoController extends Controller
 {
+    public function __construct(private readonly CompanyLogoService $companyLogoService) {}
+
     public function edit(Request $request): Response
     {
-        $logoPath = $request->user()->tenant->company_logo_path;
-
         return Inertia::render('settings/company', [
-            'logoUrl' => $logoPath
-                ? route('company.logo.image', ['v' => hash('sha256', $logoPath)], absolute: false)
-                : null,
+            'logoUrl' => $this->companyLogoService->url($request->user()->tenant),
         ]);
     }
 
     public function image(Request $request): \Illuminate\Http\Response
     {
-        $disk = Storage::disk('public');
-        $logoPath = $request->user()->tenant->company_logo_path;
+        $image = $this->companyLogoService->image($request->user()->tenant);
+        abort_unless($image, 404);
 
-        abort_unless($logoPath && $disk->exists($logoPath), 404);
-
-        $mimeType = match (strtolower(pathinfo($logoPath, PATHINFO_EXTENSION))) {
-            'jpg', 'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            'webp' => 'image/webp',
-            default => 'application/octet-stream',
-        };
-
-        return response($disk->get($logoPath), 200, [
-            'Content-Type' => $mimeType,
+        return response($image['content'], 200, [
+            'Content-Type' => $image['mimeType'],
             'Cache-Control' => 'private, no-store',
         ]);
     }
@@ -48,15 +37,7 @@ class CompanyLogoController extends Controller
             'logo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
-        $user = $request->user();
-        $tenant = $user->tenant;
-        $oldLogoPath = $tenant->company_logo_path;
-        $tenant->company_logo_path = $validated['logo']->store('company-logos/'.$tenant->getKey(), 'public');
-        $tenant->save();
-
-        if ($oldLogoPath) {
-            Storage::disk('public')->delete($oldLogoPath);
-        }
+        $this->companyLogoService->update($request->user()->tenant, $validated['logo']);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Logomarca atualizada.']);
 
@@ -65,15 +46,7 @@ class CompanyLogoController extends Controller
 
     public function destroy(Request $request): RedirectResponse
     {
-        $user = $request->user();
-
-        $tenant = $user->tenant;
-
-        if ($tenant->company_logo_path) {
-            Storage::disk('public')->delete($tenant->company_logo_path);
-            $tenant->company_logo_path = null;
-            $tenant->save();
-        }
+        $this->companyLogoService->delete($request->user()->tenant);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Logomarca removida.']);
 

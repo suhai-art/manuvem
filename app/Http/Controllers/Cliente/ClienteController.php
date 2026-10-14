@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Cliente\StoreClienteRequest;
 use App\Http\Requests\Cliente\UpdateClienteRequest;
 use App\Models\Cliente;
+use App\Services\ClienteService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,30 +14,12 @@ use Inertia\Response;
 
 class ClienteController extends Controller
 {
+    public function __construct(private readonly ClienteService $clienteService) {}
+
     public function index(Request $request): Response
     {
-        $query = Cliente::query()
-            ->orderBy($request->input('sort', 'created_at'), $request->input('direction', 'desc'));
-
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('documento', 'like', "%{$search}%");
-            });
-        }
-
-        $perPage = (int) $request->input('per_page', 15);
-        $clientes = $query->paginate($perPage)->withQueryString();
-
         return Inertia::render('clientes/index', [
-            'clientes' => $clientes,
-            'filters' => [
-                'search' => $request->input('search'),
-                'sort' => $request->input('sort', 'created_at'),
-                'direction' => $request->input('direction', 'desc'),
-                'per_page' => $perPage,
-            ],
+            ...$this->clienteService->index($request->only(['search', 'sort', 'direction', 'per_page'])),
         ]);
     }
 
@@ -47,7 +30,7 @@ class ClienteController extends Controller
 
     public function store(StoreClienteRequest $request): RedirectResponse
     {
-        $cliente = Cliente::create($request->validated());
+        $this->clienteService->create($request->validated());
 
         return redirect()->route('clientes.index')
             ->with('toast', [
@@ -72,7 +55,7 @@ class ClienteController extends Controller
 
     public function update(UpdateClienteRequest $request, Cliente $cliente): RedirectResponse
     {
-        $cliente->update($request->validated());
+        $this->clienteService->update($cliente, $request->validated());
 
         return redirect()->route('clientes.index')
             ->with('toast', [
@@ -83,7 +66,7 @@ class ClienteController extends Controller
 
     public function destroy(Cliente $cliente): RedirectResponse
     {
-        $cliente->delete();
+        $this->clienteService->delete($cliente);
 
         return redirect()->route('clientes.index')
             ->with('toast', [

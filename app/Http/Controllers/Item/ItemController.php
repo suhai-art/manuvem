@@ -6,18 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Item\StoreItemRequest;
 use App\Http\Requests\Item\UpdateItemRequest;
 use App\Models\Item;
+use App\Services\ItemService;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ItemController extends Controller
 {
+    public function __construct(private readonly ItemService $itemService) {}
+
     public function index(): Response
     {
-        $items = Item::orderBy('name')->paginate(15);
-
         return Inertia::render('items/index', [
-            'items' => $items,
+            'items' => $this->itemService->paginate(),
         ]);
     }
 
@@ -28,7 +29,7 @@ class ItemController extends Controller
 
     public function store(StoreItemRequest $request): RedirectResponse
     {
-        Item::create($request->validated());
+        $this->itemService->create($request->validated());
 
         return redirect()->route('items.index')
             ->with('toast', [
@@ -55,7 +56,7 @@ class ItemController extends Controller
         UpdateItemRequest $request,
         Item $item
     ): RedirectResponse {
-        $item->update($request->validated());
+        $this->itemService->update($item, $request->validated());
 
         return redirect()->route('items.index')
             ->with('toast', [
@@ -66,7 +67,7 @@ class ItemController extends Controller
 
     public function destroy(Item $item): RedirectResponse
     {
-        $item->delete();
+        $this->itemService->delete($item);
 
         return redirect()->route('items.index')
             ->with('toast', [
