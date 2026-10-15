@@ -41,7 +41,11 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
-        $this->userService->create($request->validated(), $request->filled('roles'));
+        $this->userService->create(
+            $request->validated(),
+            $request->filled('roles'),
+            $request->user()->tenant_id,
+        );
 
         return redirect()->route('admin.users.index')
             ->with('toast', [

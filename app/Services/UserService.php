@@ -60,13 +60,15 @@ class UserService
     /**
      * @param  array<string, mixed>  $attributes
      */
-    public function create(array $attributes, bool $assignRoles): User
+    public function create(array $attributes, bool $assignRoles, int $tenantId): User
     {
-        $user = User::create([
+        $user = new User([
             'name' => $attributes['name'],
             'email' => $attributes['email'],
             'password' => Hash::make($attributes['password']),
         ]);
+        $user->tenant_id = $tenantId;
+        $user->save();
 
         if ($assignRoles) {
             $user->syncRoles($attributes['roles']);
