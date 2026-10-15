@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { ArrowLeft, Eye, EyeOff, Save, ShieldCheck } from 'lucide-react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { index } from '@/routes/admin/users';
 
 type UserFormProps = {
@@ -23,6 +23,7 @@ export function UserForm({
     onCancel,
     onSubmit,
 }: UserFormProps) {
+    const { errors } = usePage().props;
     const [name, setName] = useState(initialValues?.name ?? '');
     const [email, setEmail] = useState(initialValues?.email ?? '');
     const [role, setRole] = useState(initialValues?.role ?? roles[0] ?? '');
@@ -74,9 +75,15 @@ export function UserForm({
                             required
                             value={name}
                             onChange={(event) => setName(event.target.value)}
+                            aria-invalid={Boolean(errors.name)}
                             className="h-10 rounded-lg border border-input bg-background px-3 font-normal outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                             placeholder="Ex.: Maria Silva"
                         />
+                        {errors.name && (
+                            <span className="text-sm font-normal text-destructive">
+                                {errors.name}
+                            </span>
+                        )}
                     </label>
                     <label className="flex flex-col gap-2 text-sm font-medium">
                         E-mail
@@ -85,9 +92,15 @@ export function UserForm({
                             type="email"
                             value={email}
                             onChange={(event) => setEmail(event.target.value)}
+                            aria-invalid={Boolean(errors.email)}
                             className="h-10 rounded-lg border border-input bg-background px-3 font-normal outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                             placeholder="maria@exemplo.com"
                         />
+                        {errors.email && (
+                            <span className="text-sm font-normal text-destructive">
+                                {errors.email}
+                            </span>
+                        )}
                     </label>
                     <label className="flex flex-col gap-2 text-sm font-medium">
                         Perfil
@@ -95,6 +108,7 @@ export function UserForm({
                             required
                             value={role}
                             onChange={(event) => setRole(event.target.value)}
+                            aria-invalid={Boolean(errors.roles || errors['roles.0'])}
                             className="h-10 rounded-lg border border-input bg-background px-3 font-normal outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                         >
                             {roles.map((item) => (
@@ -103,6 +117,11 @@ export function UserForm({
                                 </option>
                             ))}
                         </select>
+                        {(errors.roles || errors['roles.0']) && (
+                            <span className="text-sm font-normal text-destructive">
+                                {errors.roles || errors['roles.0']}
+                            </span>
+                        )}
                     </label>
                     <label className="flex flex-col gap-2 text-sm font-medium">
                         Senha
@@ -119,10 +138,11 @@ export function UserForm({
                                 onChange={(event) =>
                                     setPassword(event.target.value)
                                 }
+                                aria-invalid={Boolean(errors.password)}
                                 className="h-10 w-full rounded-lg border border-input bg-background px-3 pr-10 font-normal outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                 placeholder={
                                     mode === 'create'
-                                        ? 'Mínimo de 8 caracteres'
+                                        ? 'Informe uma senha segura'
                                         : 'Nova senha'
                                 }
                             />
@@ -145,6 +165,11 @@ export function UserForm({
                                 )}
                             </button>
                         </span>
+                        {errors.password && (
+                            <span className="text-sm font-normal text-destructive">
+                                {errors.password}
+                            </span>
+                        )}
                     </label>
                 </div>
                 <div className="flex justify-end gap-3 border-t border-border/70 pt-6">
