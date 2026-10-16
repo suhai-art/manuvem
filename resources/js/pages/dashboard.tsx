@@ -75,20 +75,22 @@ export default function Dashboard({ stats }: { stats: Stats }) {
     return (
         <>
             <Head title="Dashboard" />
-            <main className="min-h-full flex-1 bg-muted/20 p-4 sm:p-8">
+            <main className="flex-1 bg-muted/20 p-4 sm:p-8">
                 <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-                    <header className="flex flex-wrap items-end justify-between gap-4">
-                        <div>
-                            <p className="text-sm font-medium text-muted-foreground">Visão geral</p>
-                            <h1 className="mt-1 text-2xl font-semibold tracking-tight">Dashboard</h1>
-                            <p className="mt-1 text-sm text-muted-foreground">
-                                Acompanhe o movimento e as vendas recentes.
-                            </p>
+                    <header className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/70 bg-card p-5 shadow-sm">
+                        <div className="flex items-center gap-3">
+                            <ShoppingBag className="size-5 text-primary" aria-hidden="true" />
+                            <div>
+                                <h1 className="text-lg font-semibold">Dashboard</h1>
+                                <p className="text-sm text-muted-foreground">
+                                    Acompanhe as vendas e a atividade recente.
+                                </p>
+                            </div>
                         </div>
                         {vendas && stats.pode_criar_venda && (
                             <Link
                                 href="/vendas/create"
-                                className="inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+                                className="inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/80"
                             >
                                 <Plus className="size-4" aria-hidden="true" />
                                 Nova venda
@@ -98,18 +100,18 @@ export default function Dashboard({ stats }: { stats: Stats }) {
 
                     {vendas && (
                         <>
-                            <section aria-label="Indicadores de vendas" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                                <article className="flex min-h-36 flex-col justify-between border-l-4 border-emerald-600 bg-card p-5 shadow-sm">
+                            <section aria-label="Indicadores de vendas" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                                <article className="flex min-h-36 flex-col justify-between rounded-xl border border-border/70 bg-card p-5 shadow-sm">
                                     <div className="flex items-center justify-between gap-3">
                                         <span className="text-sm font-medium text-muted-foreground">Receita no mês</span>
-                                        <ShoppingBag className="size-4 text-emerald-700" aria-hidden="true" />
+                                        <ShoppingBag className="size-4 text-primary" aria-hidden="true" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-semibold tabular-nums">{formatCurrency(monthRevenue)}</p>
                                         <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                                             {revenueChange !== null && (revenueChange >= 0
-                                                ? <ArrowUpRight className="size-3.5 text-emerald-700" aria-hidden="true" />
-                                                : <ArrowDownRight className="size-3.5 text-rose-700" aria-hidden="true" />)}
+                                                ? <ArrowUpRight className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                                                : <ArrowDownRight className="size-3.5 text-muted-foreground" aria-hidden="true" />)}
                                             {revenueChange === null
                                                 ? `Mês anterior: ${formatCurrency(previousRevenue)}`
                                                 : `${Math.abs(revenueChange).toFixed(0)}% ${revenueChange >= 0 ? 'acima' : 'abaixo'} do mês anterior`}
@@ -117,10 +119,10 @@ export default function Dashboard({ stats }: { stats: Stats }) {
                                     </div>
                                 </article>
 
-                                <article className="flex min-h-36 flex-col justify-between border-l-4 border-sky-600 bg-card p-5 shadow-sm">
+                                <article className="flex min-h-36 flex-col justify-between rounded-xl border border-border/70 bg-card p-5 shadow-sm">
                                     <div className="flex items-center justify-between gap-3">
                                         <span className="text-sm font-medium text-muted-foreground">Vendas no mês</span>
-                                        <ShoppingBag className="size-4 text-sky-700" aria-hidden="true" />
+                                        <ShoppingBag className="size-4 text-primary" aria-hidden="true" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-semibold tabular-nums">{vendas.vendas_mes}</p>
@@ -128,10 +130,10 @@ export default function Dashboard({ stats }: { stats: Stats }) {
                                     </div>
                                 </article>
 
-                                <Link href="/vendas" className="flex min-h-36 flex-col justify-between border-l-4 border-amber-500 bg-card p-5 shadow-sm transition hover:bg-muted/30">
+                                <Link href="/vendas" className="flex min-h-36 flex-col justify-between rounded-xl border border-border/70 bg-card p-5 shadow-sm transition hover:bg-muted/30">
                                     <div className="flex items-center justify-between gap-3">
                                         <span className="text-sm font-medium text-muted-foreground">Aguardando ação</span>
-                                        <Clock3 className="size-4 text-amber-700" aria-hidden="true" />
+                                        <Clock3 className="size-4 text-primary" aria-hidden="true" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-semibold tabular-nums">{vendas.pendentes}</p>
@@ -140,12 +142,12 @@ export default function Dashboard({ stats }: { stats: Stats }) {
                                 </Link>
 
                                 {(stats.clientes !== null || stats.itens !== null) && (
-                                    <div className="grid min-h-36 grid-cols-2 divide-x bg-card p-5 shadow-sm">
+                                    <div className="grid min-h-36 grid-cols-2 divide-x rounded-xl border border-border/70 bg-card p-5 shadow-sm">
                                         {stats.clientes !== null && (
                                             <Link href="/clientes" className="flex flex-col justify-between pr-4 transition hover:text-primary">
                                                 <span className="text-sm font-medium text-muted-foreground">Clientes</span>
                                                 <span className="flex items-center gap-2 text-2xl font-semibold tabular-nums">
-                                                    <Users className="size-4 text-sky-700" aria-hidden="true" />
+                                                    <Users className="size-4 text-primary" aria-hidden="true" />
                                                     {stats.clientes}
                                                 </span>
                                             </Link>
@@ -154,7 +156,7 @@ export default function Dashboard({ stats }: { stats: Stats }) {
                                             <Link href="/items" className="flex flex-col justify-between pl-4 transition hover:text-primary">
                                                 <span className="text-sm font-medium text-muted-foreground">Itens</span>
                                                 <span className="flex items-center gap-2 text-2xl font-semibold tabular-nums">
-                                                    <Package className="size-4 text-rose-700" aria-hidden="true" />
+                                                    <Package className="size-4 text-primary" aria-hidden="true" />
                                                     {stats.itens}
                                                 </span>
                                             </Link>
@@ -164,7 +166,7 @@ export default function Dashboard({ stats }: { stats: Stats }) {
                             </section>
 
                             <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-                                <article className="min-w-0 border border-border/70 bg-card shadow-sm">
+                                <article className="min-w-0 overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
                                     <header className="border-b border-border/70 px-5 py-4">
                                         <h2 className="font-semibold">Evolução da receita</h2>
                                         <p className="mt-1 text-sm text-muted-foreground">Últimos seis meses, sem vendas pendentes ou canceladas.</p>
@@ -177,7 +179,7 @@ export default function Dashboard({ stats }: { stats: Stats }) {
                                                 </span>
                                                 <div className="flex h-32 w-full items-end border-b border-border/70">
                                                     <div
-                                                        className={`w-full min-h-1 transition-[height] ${index === vendas.evolucao.length - 1 ? 'bg-emerald-600' : 'bg-sky-600/70'}`}
+                                                        className={`w-full min-h-1 transition-[height] ${index === vendas.evolucao.length - 1 ? 'bg-primary' : 'bg-primary/40'}`}
                                                         style={{ height: `${Math.max((month.receita / maxRevenue) * 100, 3)}%` }}
                                                         title={`${monthLabel(month.mes)}: ${formatCurrency(month.receita)}`}
                                                     />
@@ -188,7 +190,7 @@ export default function Dashboard({ stats }: { stats: Stats }) {
                                     </div>
                                 </article>
 
-                                <article className="border border-border/70 bg-card shadow-sm">
+                                <article className="overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
                                     <header className="flex items-center justify-between gap-3 border-b border-border/70 px-5 py-4">
                                         <div>
                                             <h2 className="font-semibold">Vendas recentes</h2>
@@ -224,14 +226,14 @@ export default function Dashboard({ stats }: { stats: Stats }) {
                     {!vendas && (
                         <section className="grid gap-3 sm:grid-cols-2">
                             {stats.clientes !== null && (
-                                <Link href="/clientes" className="flex items-center justify-between border border-border/70 bg-card p-5 shadow-sm transition hover:bg-muted/30">
-                                    <span className="flex items-center gap-3 text-sm font-medium"><Users className="size-5 text-sky-700" aria-hidden="true" />Clientes</span>
+                                <Link href="/clientes" className="flex items-center justify-between rounded-xl border border-border/70 bg-card p-5 shadow-sm transition hover:bg-muted/30">
+                                    <span className="flex items-center gap-3 text-sm font-medium"><Users className="size-5 text-primary" aria-hidden="true" />Clientes</span>
                                     <span className="text-2xl font-semibold tabular-nums">{stats.clientes}</span>
                                 </Link>
                             )}
                             {stats.itens !== null && (
-                                <Link href="/items" className="flex items-center justify-between border border-border/70 bg-card p-5 shadow-sm transition hover:bg-muted/30">
-                                    <span className="flex items-center gap-3 text-sm font-medium"><Package className="size-5 text-rose-700" aria-hidden="true" />Itens</span>
+                                <Link href="/items" className="flex items-center justify-between rounded-xl border border-border/70 bg-card p-5 shadow-sm transition hover:bg-muted/30">
+                                    <span className="flex items-center gap-3 text-sm font-medium"><Package className="size-5 text-primary" aria-hidden="true" />Itens</span>
                                     <span className="text-2xl font-semibold tabular-nums">{stats.itens}</span>
                                 </Link>
                             )}
