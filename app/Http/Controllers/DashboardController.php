@@ -14,7 +14,7 @@ class DashboardController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('dashboard', [
-            'stats' => $this->dashboardService->stats(),
+            'stats' => $this->dashboardService->stats($request->user()),
         ]);
     }
 }
