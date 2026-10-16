@@ -8,6 +8,7 @@ use App\Http\Requests\Item\UpdateItemRequest;
 use App\Models\Item;
 use App\Services\ItemService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -15,10 +16,11 @@ class ItemController extends Controller
 {
     public function __construct(private readonly ItemService $itemService) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('items/index', [
-            'items' => $this->itemService->paginate(),
+            'items' => $this->itemService->paginate($request->query('search')),
+            'filters' => ['search' => $request->query('search', '')],
         ]);
     }
 

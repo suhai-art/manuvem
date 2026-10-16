@@ -22,10 +22,11 @@ class VendaController extends Controller
         private readonly CompanyLogoService $companyLogoService,
     ) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('vendas/index', [
-            'vendas' => $this->vendaService->paginate(),
+            'vendas' => $this->vendaService->paginate($request->query('search')),
+            'filters' => ['search' => $request->query('search', '')],
         ]);
     }
 

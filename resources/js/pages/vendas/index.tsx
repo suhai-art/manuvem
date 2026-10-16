@@ -4,9 +4,10 @@ import VendasTable, { VendasPayload, Venda} from './vendas-table';
 
 type VendasIndexProps = {
     vendas: VendasPayload;
+    filters: { search?: string };
 };
 
-export default function VendasIndex({ vendas }: VendasIndexProps) {
+export default function VendasIndex({ vendas, filters }: VendasIndexProps) {
     function remove(venda: Venda) {
         if (!window.confirm(`Excluir a venda ${venda.id}?`)) {
             return;
@@ -23,9 +24,7 @@ export default function VendasIndex({ vendas }: VendasIndexProps) {
 
             <main className="min-h-screen bg-muted/20 p-4 sm:p-8">
                 <div className="mx-auto w-full max-w-6xl">
-                    <VendasTable
-                        vendas={vendas}
-                    />
+                    <VendasTable vendas={vendas} initialSearch={filters?.search ?? ''} />
                 </div>
             </main>
         </>

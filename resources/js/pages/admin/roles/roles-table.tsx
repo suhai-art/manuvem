@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useServerSearch } from '@/hooks/use-server-search';
 import { Shield, Search, ShieldCheck, Trash2, Edit } from 'lucide-react';
 import { Link, router } from '@inertiajs/react';
 import useRole from '@/hooks/use-role';
@@ -28,15 +28,17 @@ const formatCount = (count: number) =>
 
 export function RolesTable({
     roles,
+    initialSearch = '',
     onEdit,
     onDelete,
 }: {
     roles: RolesPayload;
+    initialSearch?: string;
     onCreate?: () => void;
     onEdit?: (role: Role) => void;
     onDelete?: (role: Role) => void;
 }) {
-    const [search, setSearch] = useState('');
+    const { search, setSearch } = useServerSearch(initialSearch);
     const { hasPermission } = useRole();
 
     function goToPage(page: number) {
@@ -44,12 +46,6 @@ export function RolesTable({
         url.searchParams.set('page', String(page));
         router.visit(url, { preserveScroll: true, preserveState: false });
     }
-
-    const filtered = useMemo(() => {
-        const q = search.trim().toLowerCase();
-        if (!q) return roles.data;
-        return roles.data.filter((r) => r.name.toLowerCase().includes(q));
-    }, [search, roles.data]);
 
     return (
         <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
@@ -120,7 +116,7 @@ export function RolesTable({
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border/60">
-                        {filtered.map((role) => (
+                        {roles.data.map((role) => (
                             <tr
                                 key={role.id}
                                 className="transition hover:bg-muted/30"
@@ -183,7 +179,7 @@ export function RolesTable({
                         ))}
                     </tbody>
                 </table>
-                {!filtered.length && (
+                {!roles.data.length && (
                     <div className="px-5 py-12 text-center text-sm text-muted-foreground">
                         Nenhum cargo encontrada.
                     </div>
@@ -192,8 +188,8 @@ export function RolesTable({
 
             <div className="flex flex-col gap-3 border-t border-border/70 px-5 py-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
                 <span>
-                    Mostrando {filtered.length ? roles.from : 0} –
-                    {filtered.length ? roles.to : 0} de {roles.total} cargos
+                    Mostrando {roles.data.length ? roles.from : 0} –
+                    {roles.data.length ? roles.to : 0} de {roles.total} cargos
                 </span>
                 <PaginationControls
                     currentPage={roles.current_page}

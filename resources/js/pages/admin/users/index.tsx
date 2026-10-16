@@ -1,7 +1,6 @@
 import { Head, usePage, router } from '@inertiajs/react';
 import { index, store, update, destroy } from '@/routes/admin/users';
 import { UsersTable } from './users-table';
-import { useState } from 'react';
 import { User, UsersPayload } from './users-table';
 
 export default function UserIndex() {
@@ -9,7 +8,7 @@ export default function UserIndex() {
     const initialUsers: UsersPayload = page.users;
     const roles = page.roles;
 
-    const [users, setUsers] = useState<UsersPayload>(initialUsers);
+    const filters = page.filters as { search?: string };
 
     async function remove(user: User) {
         if (!window.confirm(`Excluir o usuário ${user.name}?`)) return;
@@ -25,7 +24,8 @@ export default function UserIndex() {
             <main className="min-h-screen bg-muted/20 p-4 sm:p-8">
                 <div className="mx-auto w-full max-w-6xl">
                     <UsersTable
-                        users={users}
+                        users={initialUsers}
+                        initialSearch={filters?.search ?? ''}
                         onCreate={() => router.visit(store.url())}
                         onEdit={(user) => {
                             router.visit(update.url(user.id));

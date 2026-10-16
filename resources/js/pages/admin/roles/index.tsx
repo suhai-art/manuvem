@@ -1,7 +1,6 @@
 import { Head, usePage, router } from '@inertiajs/react';
 import { index, store, update, destroy } from '@/routes/admin/roles';
 import { RolesTable } from './roles-table';
-import { useState } from 'react';
 
 type Permission = { id: number; name: string; guard_name: string };
 
@@ -27,7 +26,7 @@ export default function RolesIndex() {
     const initialRoles: RolesPayload = props.roles as RolesPayload;
     const permissions: Permission[] = (props.permissions ?? []) as Permission[];
 
-    const [roles, setRoles] = useState<RolesPayload>(initialRoles);
+    const filters = props.filters as { search?: string };
 
     async function remove(role: Role) {
         if (!window.confirm(`Excluir a role "${role.name}"?`)) return;
@@ -43,7 +42,8 @@ export default function RolesIndex() {
             <main className="min-h-screen bg-muted/20 p-4 sm:p-8">
                 <div className="mx-auto w-full max-w-6xl">
                     <RolesTable
-                        roles={roles}
+                        roles={initialRoles}
+                        initialSearch={filters?.search ?? ''}
                         onCreate={() => router.visit(store.url())}
                         onEdit={(role) => {
                             router.visit(update.url(role.id));

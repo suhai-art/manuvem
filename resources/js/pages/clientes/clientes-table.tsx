@@ -1,4 +1,3 @@
-import { useMemo, useState } from 'react';
 import {
     Search,
     Edit,
@@ -12,6 +11,7 @@ import useRole from '@/hooks/use-role';
 import { edit, show, create, destroy } from '@/routes/clientes';
 import { Cliente, ClientesPayload } from '@/models/Venda';
 import { PaginationControls } from '@/components/ui/pagination-controls';
+import { useServerSearch } from '@/hooks/use-server-search';
 
 const formatDate = (value: string) =>
     new Intl.DateTimeFormat('pt-BR', {
@@ -20,8 +20,14 @@ const formatDate = (value: string) =>
         year: 'numeric',
     }).format(new Date(value));
 
-export function ClientesTable({ clientes }: { clientes: ClientesPayload }) {
-    const [search, setSearch] = useState('');
+export function ClientesTable({
+    clientes,
+    initialSearch = '',
+}: {
+    clientes: ClientesPayload;
+    initialSearch?: string;
+}) {
+    const { search, setSearch } = useServerSearch(initialSearch);
     const { hasPermission } = useRole();
 
     function goToPage(page: number) {
@@ -29,16 +35,6 @@ export function ClientesTable({ clientes }: { clientes: ClientesPayload }) {
         url.searchParams.set('page', String(page));
         router.visit(url, { preserveScroll: true, preserveState: false });
     }
-
-    const filtered = useMemo(() => {
-        const q = search.trim().toLowerCase();
-        if (!q) return clientes.data;
-        return clientes.data.filter(
-            (c) =>
-                c.name.toLowerCase().includes(q) ||
-                (c.documento ?? '').toLowerCase().includes(q),
-        );
-    }, [search, clientes.data]);
 
     function handleDelete(cliente: Cliente) {
         if (!window.confirm(`Excluir o item "${cliente.name}"?`)) return;
@@ -118,7 +114,7 @@ export function ClientesTable({ clientes }: { clientes: ClientesPayload }) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border/60">
-                        {filtered.map((cliente) => (
+                        {clientes.data.map((cliente) => (
                             <tr
                                 key={cliente.id}
                                 className="transition hover:bg-muted/30"
@@ -184,7 +180,7 @@ export function ClientesTable({ clientes }: { clientes: ClientesPayload }) {
                         ))}
                     </tbody>
                 </table>
-                {!filtered.length && (
+                {!clientes.data.length && (
                     <div className="px-5 py-12 text-center text-sm text-muted-foreground">
                         Nenhum cliente encontrado.
                     </div>
@@ -193,8 +189,8 @@ export function ClientesTable({ clientes }: { clientes: ClientesPayload }) {
 
             <div className="flex flex-col gap-3 border-t border-border/70 px-5 py-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
                 <span>
-                    Mostrando {filtered.length ? clientes.from : 0} –
-                    {filtered.length ? clientes.to : 0} de {clientes.total}{' '}
+                    Mostrando {clientes.data.length ? clientes.from : 0} –
+                    {clientes.data.length ? clientes.to : 0} de {clientes.total}{' '}
                     clientes
                 </span>
                 <PaginationControls

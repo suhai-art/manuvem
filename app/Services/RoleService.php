@@ -8,9 +8,17 @@ use Spatie\Permission\Models\Role;
 
 class RoleService
 {
-    public function paginate(): LengthAwarePaginator
+    public function paginate(?string $search = null): LengthAwarePaginator
     {
-        return Role::withCount('permissions')->orderBy('name')->paginate(10);
+        return Role::query()
+            ->withCount('permissions')
+            ->when(
+                $search !== null && $search !== '',
+                fn ($query) => $query->where('name', 'like', "%{$search}%"),
+            )
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
     }
 
     public function permissions(): \Illuminate\Support\Collection

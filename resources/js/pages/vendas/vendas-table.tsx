@@ -24,6 +24,7 @@ import {
 } from '@/routes/vendas';
 import { Venda, VendaItem, VendasPayload } from '@/models/Venda';
 import { PaginationControls } from '@/components/ui/pagination-controls';
+import { useServerSearch } from '@/hooks/use-server-search';
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -74,8 +75,11 @@ const formatSaleDate = (venda: Venda) => {
     }).format(new Date(year, month - 1, day));
 };
 
-export default function VendasTable({ vendas }: VendasTableProps) {
-    const [search, setSearch] = useState('');
+export default function VendasTable({
+    vendas,
+    initialSearch = '',
+}: VendasTableProps & { initialSearch?: string }) {
+    const { search, setSearch } = useServerSearch(initialSearch);
     const [sortAscending, setSortAscending] = useState(false);
     const { hasPermission } = useRole();
 
@@ -86,25 +90,7 @@ export default function VendasTable({ vendas }: VendasTableProps) {
     }
 
     const filtered = useMemo(() => {
-        const query = search.trim().toLowerCase();
-        const result = query
-            ? vendas.data.filter((v) => {
-                  const cliente = v.cliente;
-                  return (
-                      `${v.id} ${cliente?.name ?? ''}`
-                          .toLowerCase()
-                          .includes(query) ||
-                      `${v.name ?? ''} ${v.external_id ?? ''}`
-                          .toLowerCase()
-                          .includes(query) ||
-                      `${v.total} ${statusLabels[v.status]}`
-                          .toLowerCase()
-                          .includes(query)
-                  );
-              })
-            : vendas.data;
-
-        return [...result].sort((a, b) => {
+        return [...vendas.data].sort((a, b) => {
             const dateForSort = (venda: Venda) =>
                 venda.has_custom_date && venda.sale_date
                     ? new Date(`${venda.sale_date}T00:00:00`).getTime()
@@ -112,7 +98,7 @@ export default function VendasTable({ vendas }: VendasTableProps) {
             const diff = dateForSort(a) - dateForSort(b);
             return sortAscending ? diff : -diff;
         });
-    }, [search, sortAscending, vendas.data]);
+    }, [sortAscending, vendas.data]);
 
     const formatTotal = (value: number) =>
         new Intl.NumberFormat('pt-BR', {

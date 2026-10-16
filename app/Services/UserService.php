@@ -21,7 +21,7 @@ class UserService
 
         $query = User::query()->with('roles')->orderBy($sort, $direction);
 
-        if (! empty($filters['search'])) {
+        if (($filters['search'] ?? '') !== '') {
             $search = $filters['search'];
             $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%")

@@ -12,6 +12,7 @@ import useRole from '@/hooks/use-role';
 import { Link, router } from '@inertiajs/react';
 import { create, edit } from '@/routes/admin/users';
 import { PaginationControls } from '@/components/ui/pagination-controls';
+import { useServerSearch } from '@/hooks/use-server-search';
 
 type Role = { id: number; name: string };
 type User = {
@@ -50,16 +51,18 @@ const initials = (name: string) =>
 
 export function UsersTable({
     users,
+    initialSearch = '',
     onCreate,
     onEdit,
     onDelete,
 }: {
     users: UsersPayload;
+    initialSearch?: string;
     onCreate?: () => void;
     onEdit?: (user: User) => void;
     onDelete?: (user: User) => void;
 }) {
-    const [search, setSearch] = useState('');
+    const { search, setSearch } = useServerSearch(initialSearch);
     const [sortAscending, setSortAscending] = useState(false);
     const { hasPermission } = useRole();
 
@@ -70,20 +73,13 @@ export function UsersTable({
     }
 
     const filteredUsers = useMemo(() => {
-        const query = search.trim().toLowerCase();
-        const result = query
-            ? users.data.filter((user) =>
-                  `${user.name} ${user.email}`.toLowerCase().includes(query),
-              )
-            : users.data;
-
-        return [...result].sort((a, b) => {
+        return [...users.data].sort((a, b) => {
             const difference =
                 new Date(a.created_at).getTime() -
                 new Date(b.created_at).getTime();
             return sortAscending ? difference : -difference;
         });
-    }, [search, sortAscending, users.data]);
+    }, [sortAscending, users.data]);
 
     return (
         <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">

@@ -12,9 +12,37 @@ use Illuminate\Support\Collection;
 
 class VendaService
 {
-    public function paginate(): LengthAwarePaginator
+    public function paginate(?string $search = null): LengthAwarePaginator
     {
-        return Venda::with('cliente', 'itens')->orderBy('created_at', 'desc')->paginate(10);
+        return Venda::query()
+            ->with('cliente', 'itens')
+            ->when($search !== null && $search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('external_id', 'like', "%{$search}%")
+                        ->orWhereHas(
+                            'cliente',
+                            fn ($cliente) => $cliente->where('name', 'like', "%{$search}%"),
+                        );
+
+                    if (is_numeric($search)) {
+                        $query->orWhere('id', (int) $search)
+                            ->orWhere('total', (float) str_replace(',', '.', $search));
+                    }
+
+                    foreach (VendaStatus::cases() as $status) {
+                        if (
+                            mb_stripos($status->label(), $search) !== false
+                            || mb_stripos($status->value, $search) !== false
+                        ) {
+                            $query->orWhere('status', $status->value);
+                        }
+                    }
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
     }
 
     /**

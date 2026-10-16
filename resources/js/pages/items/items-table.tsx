@@ -13,6 +13,7 @@ import { Link, router } from '@inertiajs/react';
 import { create, destroy, edit } from '@/routes/items';
 import { Item, ItemsPayload } from '@/models/Item';
 import { PaginationControls } from '@/components/ui/pagination-controls';
+import { useServerSearch } from '@/hooks/use-server-search';
 
 const formatPrice = (value: string) =>
     new Intl.NumberFormat('pt-BR', {
@@ -27,8 +28,14 @@ const formatDate = (value: string) =>
         year: 'numeric',
     }).format(new Date(value));
 
-export function ItemsTable({ items }: { items: ItemsPayload }) {
-    const [search, setSearch] = useState('');
+export function ItemsTable({
+    items,
+    initialSearch = '',
+}: {
+    items: ItemsPayload;
+    initialSearch?: string;
+}) {
+    const { search, setSearch } = useServerSearch(initialSearch);
     const [sortAscending, setSortAscending] = useState(false);
     const { hasPermission } = useRole();
 
@@ -39,22 +46,13 @@ export function ItemsTable({ items }: { items: ItemsPayload }) {
     }
 
     const filtered = useMemo(() => {
-        const query = search.trim().toLowerCase();
-        const result = query
-            ? items.data.filter((item) =>
-                  `${item.name} ${item.description}`
-                      .toLowerCase()
-                      .includes(query),
-              )
-            : items.data;
-
-        return [...result].sort((a, b) => {
+        return [...items.data].sort((a, b) => {
             const diff =
                 new Date(a.created_at).getTime() -
                 new Date(b.created_at).getTime();
             return sortAscending ? diff : -diff;
         });
-    }, [search, sortAscending, items.data]);
+    }, [sortAscending, items.data]);
 
     function handleDelete(item: Item) {
         if (!window.confirm(`Excluir o item "${item.name}"?`)) return;

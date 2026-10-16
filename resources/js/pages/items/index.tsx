@@ -1,7 +1,6 @@
 import { Head, usePage, router } from '@inertiajs/react';
 import { index, store, update, destroy } from '@/routes/items';
 import { ItemsTable } from './items-table';
-import { useState } from 'react';
 import { Item } from './items-table';
 
 type ItemsPayload = {
@@ -18,7 +17,7 @@ export default function ItemsIndex() {
     const props = usePage().props;
     const initialItems: ItemsPayload = props.items as ItemsPayload;
 
-    const [items, setItems] = useState<ItemsPayload>(initialItems);
+    const filters = props.filters as { search?: string };
 
     function remove(item: Item) {
         if (!window.confirm(`Excluir o item "${item.name}"?`)) return;
@@ -33,7 +32,7 @@ export default function ItemsIndex() {
             <Head title="Itens" />
             <main className="min-h-screen bg-muted/20 p-4 sm:p-8">
                 <div className="mx-auto w-full max-w-6xl">
-                    <ItemsTable items={items} />
+                    <ItemsTable items={initialItems} initialSearch={filters?.search ?? ''} />
                 </div>
             </main>
         </>

@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\Role\StoreRoleRequest;
 use App\Http\Requests\Admin\Role\UpdateRoleRequest;
 use App\Services\RoleService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
@@ -15,10 +16,11 @@ class RoleController extends Controller
 {
     public function __construct(private readonly RoleService $roleService) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('admin/roles/index', [
-            'roles' => $this->roleService->paginate(),
+            'roles' => $this->roleService->paginate($request->query('search')),
+            'filters' => ['search' => $request->query('search', '')],
         ]);
     }
 
