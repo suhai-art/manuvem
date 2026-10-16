@@ -2,8 +2,6 @@ import { useMemo, useState } from 'react';
 import {
     ArrowDown,
     ArrowUp,
-    ChevronLeft,
-    ChevronRight,
     Search,
     ShoppingCart,
     Trash2,
@@ -14,6 +12,7 @@ import useRole from '@/hooks/use-role';
 import { Link, router } from '@inertiajs/react';
 import { create, destroy, edit } from '@/routes/items';
 import { Item, ItemsPayload } from '@/models/Item';
+import { PaginationControls } from '@/components/ui/pagination-controls';
 
 const formatPrice = (value: string) =>
     new Intl.NumberFormat('pt-BR', {
@@ -32,6 +31,12 @@ export function ItemsTable({ items }: { items: ItemsPayload }) {
     const [search, setSearch] = useState('');
     const [sortAscending, setSortAscending] = useState(false);
     const { hasPermission } = useRole();
+
+    function goToPage(page: number) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', String(page));
+        router.visit(url, { preserveScroll: true, preserveState: false });
+    }
 
     const filtered = useMemo(() => {
         const query = search.trim().toLowerCase();
@@ -217,27 +222,11 @@ export function ItemsTable({ items }: { items: ItemsPayload }) {
                     Mostrando {filtered.length ? items.from : 0}–
                     {filtered.length ? items.to : 0} de {items.total} itens
                 </span>
-                <div className="flex items-center gap-2">
-                    <button
-                        type="button"
-                        disabled={items.current_page <= 1}
-                        className="inline-flex size-8 items-center justify-center rounded-md border border-input transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-                        aria-label="Página anterior"
-                    >
-                        <ChevronLeft className="size-4" />
-                    </button>
-                    <span className="rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
-                        {items.current_page}
-                    </span>
-                    <button
-                        type="button"
-                        disabled={items.current_page >= items.last_page}
-                        className="inline-flex size-8 items-center justify-center rounded-md border border-input transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-                        aria-label="Próxima página"
-                    >
-                        <ChevronRight className="size-4" />
-                    </button>
-                </div>
+                <PaginationControls
+                    currentPage={items.current_page}
+                    lastPage={items.last_page}
+                    onPageChange={goToPage}
+                />
             </div>
         </section>
     );

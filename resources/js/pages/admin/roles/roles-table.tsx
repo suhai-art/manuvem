@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Shield, Search, ShieldCheck, Trash2, Edit } from 'lucide-react';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import useRole from '@/hooks/use-role';
 import { create, edit } from '@/routes/admin/roles';
+import { PaginationControls } from '@/components/ui/pagination-controls';
 
 type Permission = { id: number; name: string; guard_name: string };
 type Role = {
@@ -37,6 +38,12 @@ export function RolesTable({
 }) {
     const [search, setSearch] = useState('');
     const { hasPermission } = useRole();
+
+    function goToPage(page: number) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', String(page));
+        router.visit(url, { preserveScroll: true, preserveState: false });
+    }
 
     const filtered = useMemo(() => {
         const q = search.trim().toLowerCase();
@@ -188,51 +195,11 @@ export function RolesTable({
                     Mostrando {filtered.length ? roles.from : 0} –
                     {filtered.length ? roles.to : 0} de {roles.total} cargos
                 </span>
-                <div className="flex items-center gap-2">
-                    <button
-                        type="button"
-                        disabled={roles.current_page <= 1}
-                        className="inline-flex size-8 items-center justify-center rounded-md border border-input transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-                        aria-label="Página anterior"
-                    >
-                        {/* ChevronLeft */}
-                        <svg
-                            className="size-4"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            aria-hidden="true"
-                        >
-                            <path d="m15 18-6-6 6-6" />
-                        </svg>
-                    </button>
-                    <span className="rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
-                        {roles.current_page}
-                    </span>
-                    <button
-                        type="button"
-                        disabled={roles.current_page >= roles.last_page}
-                        className="inline-flex size-8 items-center justify-center rounded-md border border-input transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-                        aria-label="Próxima página"
-                    >
-                        {/* ChevronRight */}
-                        <svg
-                            className="size-4"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            aria-hidden="true"
-                        >
-                            <path d="m9 18 6-6-6-6" />
-                        </svg>
-                    </button>
-                </div>
+                <PaginationControls
+                    currentPage={roles.current_page}
+                    lastPage={roles.last_page}
+                    onPageChange={goToPage}
+                />
             </div>
         </section>
     );

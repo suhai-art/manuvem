@@ -9,7 +9,7 @@ class ItemService
 {
     public function paginate(): LengthAwarePaginator
     {
-        return Item::orderBy('name')->paginate(15);
+        return Item::orderBy('name')->paginate(10);
     }
 
     /**

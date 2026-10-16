@@ -10,7 +10,7 @@ class RoleService
 {
     public function paginate(): LengthAwarePaginator
     {
-        return Role::withCount('permissions')->orderBy('name')->paginate(15);
+        return Role::withCount('permissions')->orderBy('name')->paginate(10);
     }
 
     public function permissions(): \Illuminate\Support\Collection

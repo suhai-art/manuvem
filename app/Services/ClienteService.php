@@ -8,14 +8,14 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class ClienteService
 {
     /**
-     * @param  array{search?: string|null, sort?: string|null, direction?: string|null, per_page?: int|string|null}  $filters
+    * @param  array{search?: string|null, sort?: string|null, direction?: string|null}  $filters
      * @return array{clientes: LengthAwarePaginator, filters: array<string, mixed>}
      */
     public function index(array $filters): array
     {
         $sort = $filters['sort'] ?? 'created_at';
         $direction = $filters['direction'] ?? 'desc';
-        $perPage = (int) ($filters['per_page'] ?? 15);
+        $perPage = 10;
 
         $query = Cliente::query()->orderBy($sort, $direction);
 

@@ -11,6 +11,7 @@ import { Link, router } from '@inertiajs/react';
 import useRole from '@/hooks/use-role';
 import { edit, show, create, destroy } from '@/routes/clientes';
 import { Cliente, ClientesPayload } from '@/models/Venda';
+import { PaginationControls } from '@/components/ui/pagination-controls';
 
 const formatDate = (value: string) =>
     new Intl.DateTimeFormat('pt-BR', {
@@ -22,6 +23,12 @@ const formatDate = (value: string) =>
 export function ClientesTable({ clientes }: { clientes: ClientesPayload }) {
     const [search, setSearch] = useState('');
     const { hasPermission } = useRole();
+
+    function goToPage(page: number) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', String(page));
+        router.visit(url, { preserveScroll: true, preserveState: false });
+    }
 
     const filtered = useMemo(() => {
         const q = search.trim().toLowerCase();
@@ -190,49 +197,11 @@ export function ClientesTable({ clientes }: { clientes: ClientesPayload }) {
                     {filtered.length ? clientes.to : 0} de {clientes.total}{' '}
                     clientes
                 </span>
-                <div className="flex items-center gap-2">
-                    <button
-                        type="button"
-                        disabled={clientes.current_page <= 1}
-                        className="inline-flex size-8 items-center justify-center rounded-md border border-input transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-                        aria-label="Página anterior"
-                    >
-                        <svg
-                            className="size-4"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            aria-hidden="true"
-                        >
-                            <path d="m15 18-6-6 6-6" />
-                        </svg>
-                    </button>
-                    <span className="rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
-                        {clientes.current_page}
-                    </span>
-                    <button
-                        type="button"
-                        disabled={clientes.current_page >= clientes.last_page}
-                        className="inline-flex size-8 items-center justify-center rounded-md border border-input transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-                        aria-label="Próxima página"
-                    >
-                        <svg
-                            className="size-4"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            aria-hidden="true"
-                        >
-                            <path d="m9 18 6-6-6-6" />
-                        </svg>
-                    </button>
-                </div>
+                <PaginationControls
+                    currentPage={clientes.current_page}
+                    lastPage={clientes.last_page}
+                    onPageChange={goToPage}
+                />
             </div>
         </section>
     );

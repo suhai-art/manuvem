@@ -19,7 +19,7 @@ class ClienteController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('clientes/index', [
-            ...$this->clienteService->index($request->only(['search', 'sort', 'direction', 'per_page'])),
+            ...$this->clienteService->index($request->only(['search', 'sort', 'direction'])),
         ]);
     }
 

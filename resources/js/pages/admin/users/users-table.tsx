@@ -2,8 +2,6 @@ import { useMemo, useState } from 'react';
 import {
     ArrowDown,
     ArrowUp,
-    ChevronLeft,
-    ChevronRight,
     Edit,
     Search,
     SlidersHorizontal,
@@ -11,8 +9,9 @@ import {
     Users,
 } from 'lucide-react';
 import useRole from '@/hooks/use-role';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { create, edit } from '@/routes/admin/users';
+import { PaginationControls } from '@/components/ui/pagination-controls';
 
 type Role = { id: number; name: string };
 type User = {
@@ -63,6 +62,12 @@ export function UsersTable({
     const [search, setSearch] = useState('');
     const [sortAscending, setSortAscending] = useState(false);
     const { hasPermission } = useRole();
+
+    function goToPage(page: number) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', String(page));
+        router.visit(url, { preserveScroll: true, preserveState: false });
+    }
 
     const filteredUsers = useMemo(() => {
         const query = search.trim().toLowerCase();
@@ -261,27 +266,11 @@ export function UsersTable({
                     {filteredUsers.length ? users.to : 0} de {users.total}{' '}
                     usuários
                 </span>
-                <div className="flex items-center gap-2">
-                    <button
-                        type="button"
-                        disabled={users.current_page <= 1}
-                        className="inline-flex size-8 items-center justify-center rounded-md border border-input transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-                        aria-label="Página anterior"
-                    >
-                        <ChevronLeft className="size-4" />
-                    </button>
-                    <span className="rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
-                        {users.current_page}
-                    </span>
-                    <button
-                        type="button"
-                        disabled={users.current_page >= users.last_page}
-                        className="inline-flex size-8 items-center justify-center rounded-md border border-input transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-                        aria-label="Próxima página"
-                    >
-                        <ChevronRight className="size-4" />
-                    </button>
-                </div>
+                <PaginationControls
+                    currentPage={users.current_page}
+                    lastPage={users.last_page}
+                    onPageChange={goToPage}
+                />
             </div>
         </section>
     );

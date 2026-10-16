@@ -17,7 +17,7 @@ class UserService
     {
         $sort = $filters['sort'] ?? 'created_at';
         $direction = $filters['direction'] ?? 'desc';
-        $perPage = (int) ($filters['per_page'] ?? 15);
+        $perPage = 10;
 
         $query = User::query()->with('roles')->orderBy($sort, $direction);
 

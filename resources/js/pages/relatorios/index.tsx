@@ -1,6 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import { useRef, useState, type FormEvent } from 'react';
-import { CalendarDays, ChevronLeft, ChevronRight, FileText, Printer } from 'lucide-react';
+import { CalendarDays, FileText, Printer } from 'lucide-react';
+import { PaginationControls } from '@/components/ui/pagination-controls';
 
 type RelatorioVenda = {
     id: number;
@@ -362,29 +363,11 @@ export default function RelatoriosIndex({
                             <span>
                                 Mostrando {vendas.from ?? 0}-{vendas.to ?? 0} de {vendas.total} vendas
                             </span>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => visitPage(vendas.current_page - 1)}
-                                    disabled={vendas.current_page <= 1}
-                                    className="inline-flex size-8 items-center justify-center rounded-md border border-input transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-                                    aria-label="Página anterior"
-                                >
-                                    <ChevronLeft className="size-4" />
-                                </button>
-                                <span className="min-w-8 text-center font-medium text-foreground">
-                                    {vendas.current_page} de {vendas.last_page}
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={() => visitPage(vendas.current_page + 1)}
-                                    disabled={vendas.current_page >= vendas.last_page}
-                                    className="inline-flex size-8 items-center justify-center rounded-md border border-input transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-                                    aria-label="Próxima página"
-                                >
-                                    <ChevronRight className="size-4" />
-                                </button>
-                            </div>
+                            <PaginationControls
+                                currentPage={vendas.current_page}
+                                lastPage={vendas.last_page}
+                                onPageChange={visitPage}
+                            />
                         </footer>
                     </section>
                 </div>

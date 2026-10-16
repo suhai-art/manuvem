@@ -14,7 +14,7 @@ class VendaService
 {
     public function paginate(): LengthAwarePaginator
     {
-        return Venda::with('cliente', 'itens')->orderBy('created_at', 'desc')->paginate(15);
+        return Venda::with('cliente', 'itens')->orderBy('created_at', 'desc')->paginate(10);
     }
 
     /**
@@ -24,7 +24,7 @@ class VendaService
     public function reports(array $filters): array
     {
         return [
-            'vendas' => $this->reportsQuery($filters)->paginate(20)->withQueryString(),
+            'vendas' => $this->reportsQuery($filters)->paginate(10)->withQueryString(),
             'clientes' => Cliente::query()->select('id', 'name')->orderBy('name')->get(),
             'filters' => $this->formatFilters($filters),
         ];

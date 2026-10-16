@@ -22,7 +22,7 @@ class UserController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('admin/users/index', [
-            ...$this->userService->index($request->only(['search', 'role', 'sort', 'direction', 'per_page'])),
+            ...$this->userService->index($request->only(['search', 'role', 'sort', 'direction'])),
         ]);
     }
 
